@@ -1,0 +1,17 @@
+{
+  "welcome-back": "Welcome back",
+  "Project": "Project",
+  "Analytics": "Analytics",
+  "events": {
+    "title": "Events",
+    "existing": "Existing Events",
+    "new": "New Event",
+    "setup": "New Activation Setup"
+  },
+  "campaigns": {
+    "title": "Campaigns",
+    "existing": "Existing Campaigns",
+    "new": "New Campaign",
+    "setup": "Campaign Setup"
+  }
+}

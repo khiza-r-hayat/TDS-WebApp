@@ -1,0 +1,43 @@
+<form [formGroup]="this.filterForm">
+    <div class="flex flex-col sm:flex-row items-center gap-2">
+        <!-- Options Dropdown -->
+        <mat-form-field class="w-full">
+            <mat-label>StockType</mat-label>
+            <mat-select [value]="initStocktype()" formControlName="stockType">
+                @for (stockType of stockTypes(); track $index) {
+                <mat-option [value]="stockType.id">
+                    {{ stockType.name }}
+                </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Options Dropdown -->
+        <mat-form-field class="w-full">
+            <mat-label>Locations</mat-label>
+            <mat-select [value]="initLocation()" formControlName="selectedOption" multiple>
+                @for (city of cities(); track $index) {
+                <mat-option [value]="city.id">
+                    {{ city.name }}
+                </mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <!-- Date Range Picker -->
+        <mat-form-field class="w-full">
+            <mat-label>Date Range</mat-label>
+            <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName="startDate" placeholder="Start date" class="focus:outline-none">
+                <input matEndDate formControlName="endDate" placeholder="End date" class="focus:outline-none">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <!-- Filter Button -->
+        <button mat-raised-button color="primary" class="w-1/5 py-2" (click)="onFilter()">
+            Filter
+        </button>
+    </div>
+</form>

@@ -1,0 +1,11 @@
+{
+    "welcome-back": "Hoşgeldin",
+    "Project": "Proje",
+    "Analytics": "Analitik",
+    "events": {
+        "title": "Olay",
+        "existing": "OlayMevcut Etkinlikler",
+        "new": "Yeni Etkinlik",
+        "setup": "Yeni Etkinleştirme Kurulumu"
+    }
+}

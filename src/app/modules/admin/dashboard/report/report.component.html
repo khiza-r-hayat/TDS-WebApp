@@ -1,0 +1,95 @@
+<div class="flex flex-col flex-auto absolute inset-0 overflow-y-auto">
+    <div class="bg-card">
+        <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-8">
+            <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-8 sm:my-12">
+                <div class="flex flex-auto items-center min-w-0">
+                    <div class="flex flex-col min-w-0">
+                        <div
+                            class="text-2xl md:text-5xl font-semibold tracking-tight leading-7 sm:leading-snug truncate">
+                            Welcome back, {{user.firstName + " " + user.lastName}}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
+                    @if (user.roleId === userRoles.SUPER_ADMINISTRATOR || user.roleId === userRoles.EVENT_ORGANIZER) {
+                    <button class="bg-accent" mat-flat-button [color]="'accent'" [routerLink]="['/event-setup']">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus-circle'"></mat-icon>
+                        <span class="ml-2">New Activation</span></button>
+
+                    <button mat-flat-button [color]="'primary'"><mat-icon class="icon-size-5"
+                            [svgIcon]="'heroicons_outline:cog'"></mat-icon><span class="ml-2">Setting</span></button>
+                    }@else {
+                    <button class="bg-accent" mat-flat-button [color]="'accent'" [routerLink]="['/campaign-setup']">
+                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_outline:plus-circle'"></mat-icon>
+                        <span class="ml-2">New Campaign</span></button>
+                    }
+                </div>
+            </div>
+            <app-filter-component class="mb-5" (filter)="renderChart($event)" [stockTypes]="eventStockTypes"
+                [cities]="evenLocations" [initFilter]="filter"></app-filter-component>
+            <div matRipple [matMenuTriggerFor]="menu"
+                class="relative flex self-start pt-2 pb-1 pl-5 pr-4 cursor-pointer overflow-hidden rounded-t-xl border border-b-0 bg-default">
+                <div class="flex items-center">
+                    <div class="overflow-hidden">
+                        <div class="text-lg font-medium leading-6 truncate">{{selectedEvent.title}}</div>
+                    </div>
+                    <div class="flex items-center justify-center pl-2"><mat-icon class="icon-size-5"
+                            [svgIcon]="'heroicons_solid:chevron-down'"></mat-icon>
+                    </div>
+
+                </div>
+                <mat-menu #menu="matMenu" [xPosition]="'after'">
+                    @for (event of events(); track $index) {
+                    <button mat-menu-item (click)="switchReportEvent(event)">
+                        <span class="truncate">
+                            {{event.title}}
+                        </span>
+                    </button>
+                    }
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+    <div class="flex-auto border-t -mt-px pt-4 sm:pt-6">
+        <div class="w-full max-w-screen-xl mx-auto mb-5">
+            <div class="grid grid-cols-1 sm:grid-cols-2 px-6 md:grid-cols-2 gap-6 w-full min-w-0">
+
+                @if (chartOptions['achievment']) {
+                <div class="bg-card p-10">
+                    <apx-chart [series]="chartOptions['achievment'].series" [chart]="chartOptions['achievment'].chart"
+                        [xaxis]="chartOptions['achievment'].xaxis" [title]="chartOptions['achievment'].title"
+                        [dataLabels]="chartOptions['achievment'].dataLabels"
+                        [plotOptions]="chartOptions['achievment'].plotOptions"></apx-chart>
+                </div>
+                }
+                @if (chartOptions['mtd']) {
+                <div class="bg-card p-10">
+                    <apx-chart [series]="chartOptions['mtd'].series" [chart]="chartOptions['mtd'].chart"
+                        [xaxis]="chartOptions['mtd'].xaxis" [title]="chartOptions['mtd'].title"
+                        [dataLabels]="chartOptions['mtd'].dataLabels"
+                        [plotOptions]="chartOptions['mtd'].plotOptions"></apx-chart>
+                </div>
+                }
+                @if (chartOptions['detail']) {
+                <div class="bg-card p-10">
+                    <apx-chart [series]="chartOptions['detail'].series" [chart]="chartOptions['detail'].chart"
+                        [xaxis]="chartOptions['detail'].xaxis" [title]="chartOptions['detail'].title"
+                        [dataLabels]="chartOptions['detail'].dataLabels"
+                        [plotOptions]="chartOptions['detail'].plotOptions"></apx-chart>
+                </div>
+                }
+                @if (chartOptions['duration']) {
+                <div class="bg-card p-10">
+                    <apx-chart [series]="chartOptions['duration'].series" [chart]="chartOptions['duration'].chart"
+                        [xaxis]="chartOptions['duration'].xaxis" [title]="chartOptions['duration'].title"
+                        [dataLabels]="chartOptions['duration'].dataLabels"
+                        [plotOptions]="chartOptions['duration'].plotOptions"></apx-chart>
+                </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+</div>

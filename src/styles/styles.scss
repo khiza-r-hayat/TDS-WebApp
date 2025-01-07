@@ -1,0 +1,16 @@
+/* ----------------------------------------------------------------------------------------------------- */
+/*  @ Import/write your custom styles here.
+/*  @ Styles from this file will override 'vendors.scss' and Fuse's base styles.
+/* ----------------------------------------------------------------------------------------------------- */
+.fuse-vertical-navigation-wrapper,
+.bg-brown {
+  background-color: #503aa0 !important;
+}
+
+.gradient-background {
+  background: linear-gradient(
+    #6b32c1,
+    #3932c1
+  ); /* Adjust the shades as needed */
+  /* Adjust the colors as needed */
+}
