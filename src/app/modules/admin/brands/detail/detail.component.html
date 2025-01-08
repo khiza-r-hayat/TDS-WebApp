@@ -36,6 +36,36 @@
                             }
                         </mat-form-field>
                     </div> -->
+                    <!-- <div class="mt-8">
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Origin</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                            <input type="text" placeholder="Pick Location" aria-label="Origin" matInput
+                                formControlName="origin" [matAutocomplete]="autoOrigin">
+                            <mat-autocomplete autoActiveFirstOption #autoOrigin="matAutocomplete" (optionSelected)="originChange($event.option.value)">
+                                @for (item of localLocations; track $index) {
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+
+                    <div class="mt-8">
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Destination</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                            <input type="text" placeholder="Pick Location" aria-label="Destination" matInput
+                                formControlName="destination" [matAutocomplete]="autoDestination">
+                            <mat-autocomplete autoActiveFirstOption #autoDestination="matAutocomplete"
+                                [displayWith]="displayLocation">
+                                @for (item of localLocations; track $index) {
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div> -->
                     <div class="mt-8">
                         <mat-form-field class="fuse-mat-no-subscript w-full">
                             <mat-label>Origin</mat-label>
@@ -43,7 +73,7 @@
                                 [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
                             <mat-select [formControlName]="'origin'">
                                 @for (item of originLocations(); track $index) {
-                                    <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
                                 }
                             </mat-select>
                         </mat-form-field>
@@ -55,9 +85,31 @@
                                 [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
                             <mat-select [formControlName]="'destination'">
                                 @for (item of destinationLocations(); track $index) {
-                                    <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
                                 }
                             </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="mt-8">
+                        <mat-form-field class="fuse-mat-no-subscript w-3/6">
+                            <mat-label>Pickup Earliest</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
+                            <input matInput placeholder="Pickup Earliest" [matDatepicker]="pickupEarliest"
+                                [formControlName]="'pickupEarliest'">
+                            <mat-datepicker-toggle matSuffix [for]="pickupEarliest"></mat-datepicker-toggle>
+                            <mat-datepicker #pickupEarliest></mat-datepicker>
+                        </mat-form-field>
+                        <!-- </div>
+                    <div class="mt-8"> -->
+                        <mat-form-field class="fuse-mat-no-subscript w-3/6">
+                            <mat-label>Pickup Latest</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
+                            <input matInput [matDatepicker]="pickupLatest" placeholder="Pickup Latest"
+                                [formControlName]="'pickupLatest'">
+                            <mat-datepicker-toggle matSuffix [for]="pickupLatest"></mat-datepicker-toggle>
+                            <mat-datepicker #pickupLatest></mat-datepicker>
                         </mat-form-field>
                     </div>
                     <!-- <div class="mt-8">
