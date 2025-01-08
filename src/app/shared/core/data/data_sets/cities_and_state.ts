@@ -6,6 +6,55 @@ export interface LocalLocation {
     lng: string;
 }
 
+export interface EquipmentType {
+    id: string;
+    name: string;
+    short: string;
+}
+
+export const equipmentTypes: EquipmentType[] = [
+    {
+        id: 'Van',
+        name: 'Van',
+        short: 'V',
+    },
+    {
+        id: 'Reefer',
+        name: 'Reefer',
+        short: 'R',
+    },
+    {
+        id: 'Flatbed',
+        name: 'Flatbed',
+        short: 'F',
+    },
+    {
+        id: 'AutoCarrier',
+        name: 'Auto Carrier',
+        short: 'AC',
+    },
+    {
+        id: 'BTrain',
+        name: 'B-Train',
+        short: 'BT',
+    },
+    {
+        id: 'Conestoga',
+        name: 'Conestoga',
+        short: 'CN',
+    },
+    {
+        id: 'Container',
+        name: 'Container',
+        short: 'C',
+    },
+    {
+        id: 'Container Insulated',
+        name: 'Container Insulated',
+        short: 'CI',
+    },
+];
+
 export const pakistan_locations = [
     {
         country: 'PK',

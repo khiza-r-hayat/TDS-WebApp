@@ -70,7 +70,7 @@ export class BrandDetailComponent implements OnInit {
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        private _brandListComponent: BrandListComponent,
+        // private _brandListComponent: BrandListComponent,
         private _brandService: BrandService,
         private _sessionService: UserSessionService
         // private logger: LogService
@@ -93,7 +93,7 @@ export class BrandDetailComponent implements OnInit {
             this.brandId = Utility.generateUUID();
         }
 
-        this._brandListComponent.matDrawer.open();
+        // this._brandListComponent.matDrawer.open();
         this.initializeForm();
     }
 
@@ -107,6 +107,8 @@ export class BrandDetailComponent implements OnInit {
             destination: ['0', [Validators.required]],
             pickupEarliest: ['0', [Validators.required]],
             pickupLatest: ['0', [Validators.required]],
+            pickupHours: ['0', [Validators.required]],
+            dropoffHours: ['0', [Validators.required]],
             // status: ["0", [Validators.required]],
         });
         if (this.editMode) {
@@ -125,10 +127,10 @@ export class BrandDetailComponent implements OnInit {
     // @ Drawer Methods
     // -----------------------------------------------------------------------------------------------------
 
-    closeDrawer(): Promise<MatDrawerToggleResult> {
-        this._router.navigateByUrl('/loads');
-        return this._brandListComponent.matDrawer.close();
-    }
+    // closeDrawer(): Promise<MatDrawerToggleResult> {
+    //     this._router.navigateByUrl('/loads');
+    //     return this._brandListComponent.matDrawer.close();
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Upload/Save Methods
@@ -146,6 +148,6 @@ export class BrandDetailComponent implements OnInit {
 
         this._brandService
             .upsertBrands([upload])
-            .subscribe((res) => this.closeDrawer());
+            .subscribe((res) => console.log('upload response:',res));
     }
 }

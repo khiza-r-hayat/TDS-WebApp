@@ -19,7 +19,7 @@ export class LocalStorageService {
 
     public set(key: string, value: object) {
         localStorage.setItem(key, Crypto.encryptData(value));
-        console.log('item added')
+        // console.log('item added')
     }
 
     get(key: string, flag: boolean = false): LocalSession {
