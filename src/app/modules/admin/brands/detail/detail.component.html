@@ -6,97 +6,182 @@
     </div>
 
     <!-- Contact form -->
-     <div class="bg-card rounded-3xl m-10">
-         <form [formGroup]="brandForm">
-             <div class="grid sm:grid-cols-6 gap-6 w-full mb-10 p-10">
-                 <!-- Title -->
-                 <div class="sm:col-span-3">
-                     <mat-form-field class="fuse-mat-no-subscript w-full">
-                         <mat-label>Origin</mat-label>
-                         <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                             [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
-                         <mat-select [formControlName]="'origin'">
-                             @for (item of originLocations(); track $index) {
-                             <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
-                             }
-                         </mat-select>
-                     </mat-form-field>
-                 </div>
-                 <div class="sm:col-span-3">
-                     <mat-form-field class="fuse-mat-no-subscript w-full">
-                         <mat-label>Destination</mat-label>
-                         <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                             [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
-                         <mat-select [formControlName]="'destination'">
-                             @for (item of destinationLocations(); track $index) {
-                             <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
-                             }
-                         </mat-select>
-                     </mat-form-field>
-                 </div>
-                 <div class="sm:col-span-2">
-                     <mat-form-field class="fuse-mat-no-subscript w-full">
-                         <mat-label>Pickup Earliest</mat-label>
-                         <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                             [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
-                         <input matInput placeholder="Pickup Earliest" [matDatepicker]="pickupEarliest"
-                             [formControlName]="'pickupEarliest'">
-                         <mat-datepicker-toggle matSuffix [for]="pickupEarliest"></mat-datepicker-toggle>
-                         <mat-datepicker #pickupEarliest></mat-datepicker>
-                     </mat-form-field>
-                 </div>
-                 <div class="sm:col-span-2">
-                     <mat-form-field class="fuse-mat-no-subscript w-full">
-                         <mat-label>Pickup Latest</mat-label>
-                         <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                             [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
-                         <input matInput [matDatepicker]="pickupLatest" placeholder="Pickup Latest"
-                             [formControlName]="'pickupLatest'">
-                         <mat-datepicker-toggle matSuffix [for]="pickupLatest"></mat-datepicker-toggle>
-                         <mat-datepicker #pickupLatest></mat-datepicker>
-                     </mat-form-field>
-                 </div>
-                 <div class="sm:col-span-1">
-                    <mat-form-field class="fuse-mat-no-subscript w-full">
-                        <mat-label>Pick Up Hours</mat-label>
-                        <input matInput placeholder="Pickup Hours"
-                            formControlName="pickupHours" type="number">
-                    </mat-form-field>
-                 </div>
-                 <div class="sm:col-span-1">
-                    <mat-form-field class="fuse-mat-no-subscript w-full">
-                        <mat-label>Drop Off Hours</mat-label>
-                        <input matInput placeholder="Dropoff Hours"
-                            formControlName="dropoffHours" type="number">
-                    </mat-form-field>
-                 </div>
-             </div>
-     
-             <!-- <div class="py-10 flex items-center justify-between"> -->
-     
-             <!-- Add data entry locally -->
-             <div class="flex flex-grow justify-center">
-     
-                 <button mat-button [matTooltip]="'Cancel'" [routerLink]="['../']">
-                     Cancel
-                 </button>
-     
-                 <!-- Save -->
-                 <button class="ml-2" mat-flat-button [color]="'primary'" [disabled]="brandForm.invalid || isSaving()"
-                     [matTooltip]="'Save'" (click)="save()">
-                     Save
-                 </button>
-             </div>
-             <!-- upload to database -->
-             <!-- <div>
-                     <button [disabled]="!this.selectedTeamMembers().length && !teams().length" mat-raised-button
-                         color="primary" (click)="uploadTeams()">
-                         Save
-                         <mat-icon class="icon-size-4" svgIcon="heroicons_outline:chevron-double-right"></mat-icon>
-                     </button>
-                 </div> -->
-     
-             <!-- </div> -->
-         </form>
-     </div>
+    <div class="flex justify-center">
+        <div class="bg-card rounded-3xl my-10 w-full mx-4 sm:w-3/4">
+            <form [formGroup]="form">
+                <!-- grid sm:grid-cols-6 gap-6  -->
+                <div class="w-full mb-10 p-10">
+                    <!-- Location and Timing -->
+                    <div class="flex flex-col sm:col-span-6 mb-4">
+                        <strong> Location and Timing</strong>
+                        <mat-divider class="my-2"></mat-divider>
+                    </div>
+                    <div class="flex flex-col sm:flex-row">
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Origin</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                            <input type="text" placeholder="Origin" aria-label="Number" matInput
+                                formControlName="origin" [matAutocomplete]="autoO">
+                            <mat-autocomplete autoActiveFirstOption #autoO="matAutocomplete"
+                                [displayWith]="displayLocation">
+                                @for (item of originLocations$ |async; track $index) {
+                                <mat-option [value]="item"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                        <div class="mx-2"></div>
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Destination</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                            <input type="text" placeholder="Destination" aria-label="Number" matInput
+                                formControlName="destination" [matAutocomplete]="autoD">
+                            <mat-autocomplete autoActiveFirstOption #autoD="matAutocomplete"
+                                [displayWith]="displayLocation">
+                                @for (item of destinationLocations$ |async; track $index) {
+                                <mat-option [value]="item"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                }
+                            </mat-autocomplete>
+                        </mat-form-field>
+                    </div>
+                    <div class="flex flex-col sm:flex-row">
+                        <!-- class="sm:col-span-1" -->
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Pickup Earliest</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
+                            <input matInput placeholder="Pickup Earliest" [matDatepicker]="pickupEarliest"
+                                [formControlName]="'pickupEarliest'" min="0">
+                            <mat-datepicker-toggle matSuffix [for]="pickupEarliest"></mat-datepicker-toggle>
+                            <mat-datepicker #pickupEarliest></mat-datepicker>
+                        </mat-form-field>
+
+                        <div class="mx-1"></div>
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Pickup Latest</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
+                            <input matInput [matDatepicker]="pickupLatest" placeholder="Pickup Latest"
+                                [formControlName]="'pickupLatest'" min="0">
+                            <mat-datepicker-toggle matSuffix [for]="pickupLatest"></mat-datepicker-toggle>
+                            <mat-datepicker #pickupLatest></mat-datepicker>
+                        </mat-form-field>
+
+                        <div class="mx-2"></div>
+
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Pick Up Hours</mat-label>
+                            <input matInput placeholder="Pickup Hours" formControlName="pickupHours" type="number">
+                        </mat-form-field>
+
+
+                        <div class="mx-1"></div>
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Drop Off Hours</mat-label>
+                            <input matInput placeholder="Dropoff Hours" formControlName="dropoffHours" type="number">
+                        </mat-form-field>
+
+                    </div>
+                    <!-- Equipment Details -->
+                    <div class="flex flex-col sm:col-span-6 my-4">
+                        <strong> Equipment Details</strong>
+                        <mat-divider class="my-2"></mat-divider>
+                    </div>
+                    <div class="flex flex-col sm:flex-row">
+                        <!-- class="sm:col-span-1" -->
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Equipment Type</mat-label>
+                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                [svgIcon]="'heroicons_solid:truck'"></mat-icon>
+                            <mat-select [formControlName]="'equipment'">
+                                @for (item of equipmentTypes(); track $index) {
+                                <mat-option [value]="item.id" class=" px-2 flex justify-between">
+                                    <p>{{item.name}}</p>
+                                    <p>{{item.short}}</p>
+                                </mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+
+                        <div class="mx-2"></div>
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Length</mat-label>
+                            <input matInput placeholder="Length (ft)" formControlName="length" type="number">
+                        </mat-form-field>
+
+                        <div class="mx-1"></div>
+
+                        <mat-form-field class="fuse-mat-no-subscript w-full">
+                            <mat-label>Weight</mat-label>
+                            <input matInput placeholder="Weight (kg)" formControlName="weight" type="number">
+                        </mat-form-field>
+
+                    </div>
+
+                    <!-- Additional Information -->
+                    <div class="flex flex-col sm:col-span-6 my-4">
+                        <strong> Additional Information</strong>
+                        <mat-divider class="my-2"></mat-divider>
+                    </div>
+                    <div class="flex flex-col sm:flex-row">
+                        <!-- class="sm:col-span-1" -->
+
+                        <mat-form-field class="fuse-mat-no-subscript w-3/6">
+                            <mat-label>Comments</mat-label>
+                            <input matInput placeholder="Comments" formControlName="comments" type="text">
+                        </mat-form-field>
+
+                        <div class="mx-2"></div>
+                        <div class="flex flex-col w-3/6">
+                            <mat-form-field class="fuse-mat-no-subscript w-full">
+                                <mat-label>Commodity</mat-label>
+                                <input matInput placeholder="Commodity" formControlName="commodity" type="text">
+                            </mat-form-field>
+
+                            <div class="my-2"></div>
+
+                            <mat-form-field class="fuse-mat-no-subscript w-full">
+                                <mat-label>Reference ID</mat-label>
+                                <input matInput placeholder="Reference ID" formControlName="refId" type="text">
+                            </mat-form-field>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- <div class="py-10 flex items-center justify-between"> -->
+
+                <!-- Add data entry locally -->
+                <div class="flex flex-grow justify-center mb-5">
+
+                    <button mat-button [matTooltip]="'Cancel'" [routerLink]="['../']">
+                        Cancel
+                    </button>
+
+                    <!-- Save -->
+                    <button class="ml-2" mat-flat-button [color]="'primary'" [disabled]="form.invalid || isSaving()"
+                        [matTooltip]="'Save'" (click)="save()">
+                        Save
+                    </button>
+                </div>
+                <!-- upload to database -->
+                <!-- <div>
+                          <button [disabled]="!this.selectedTeamMembers().length && !teams().length" mat-raised-button
+                              color="primary" (click)="uploadTeams()">
+                              Save
+                              <mat-icon class="icon-size-4" svgIcon="heroicons_outline:chevron-double-right"></mat-icon>
+                          </button>
+                      </div> -->
+
+                <!-- </div> -->
+            </form>
+        </div>
+    </div>
 </div>

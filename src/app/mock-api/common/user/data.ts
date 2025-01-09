@@ -5,4 +5,5 @@ export const user = {
     email: 'rehan.zulfiqar@gmail.com',
     avatar: 'images/avatars/brian-hughes.jpg',
     status: 'online',
+    roleId: '0',
 };

@@ -14,42 +14,42 @@ export interface EquipmentType {
 
 export const equipmentTypes: EquipmentType[] = [
     {
-        id: 'Van',
+        id: '0a9e7bd1-2391-42f1-ac9e-941ca0da0b77',
         name: 'Van',
         short: 'V',
     },
     {
-        id: 'Reefer',
+        id: 'fc4673ce-4d57-48d8-b4ea-7f3c7eb231d5',
         name: 'Reefer',
         short: 'R',
     },
     {
-        id: 'Flatbed',
+        id: '8089508d-ec54-46eb-bd26-f2d514dd6374',
         name: 'Flatbed',
         short: 'F',
     },
     {
-        id: 'AutoCarrier',
+        id: 'fd8f6b37-7ccb-4c80-9b32-f82d709aaa46',
         name: 'Auto Carrier',
         short: 'AC',
     },
     {
-        id: 'BTrain',
+        id: '62b40110-891a-4b2a-98c8-cbed3efd4666',
         name: 'B-Train',
         short: 'BT',
     },
     {
-        id: 'Conestoga',
+        id: 'f2fcf382-0cad-467f-9722-4fa377b736d1',
         name: 'Conestoga',
         short: 'CN',
     },
     {
-        id: 'Container',
+        id: '10cfec29-3237-47ef-97c2-baadc0646891',
         name: 'Container',
         short: 'C',
     },
     {
-        id: 'Container Insulated',
+        id: 'ee759151-848e-459d-acea-576ecd8213e9',
         name: 'Container Insulated',
         short: 'CI',
     },

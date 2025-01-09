@@ -4,13 +4,8 @@ import { Auth } from '@angular/fire/auth';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 import { UserModel } from 'app/shared/core/domain/models/account.model';
-import {
-    LocalSession,
-    UserSession,
-} from 'app/shared/core/domain/models/session.model';
-import { AccountService } from 'app/shared/core/domain/services/account.service';
+import { LocalSession } from 'app/shared/core/domain/models/session.model';
 import { LocalStorageService } from 'app/shared/core/domain/services/local_storage.service';
-import { UserSessionService } from 'app/shared/core/domain/services/session.service';
 import { environment } from 'environments/environment';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { User } from '../user/user.types';
@@ -89,9 +84,10 @@ export class AuthService {
                 // Store the user on the user service
                 this._userService.user = {
                     id: user.id,
-                    avatar: user.phone,
+                    avatar: user.photo,
                     name: user.title,
                     email: user.email,
+                    roleId: user.roleId,
                 } as User;
 
                 // Return a new observable with the response

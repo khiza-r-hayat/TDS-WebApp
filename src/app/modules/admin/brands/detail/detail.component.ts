@@ -1,4 +1,5 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
+import { AsyncPipe } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import {
     FormsModule,
@@ -7,20 +8,23 @@ import {
     UntypedFormGroup,
     Validators,
 } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDivider } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatDrawerToggleResult } from '@angular/material/sidenav';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Utility } from 'app/shared/core/classes/utility';
 import {
+    EquipmentType,
     LocalLocation,
+    equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
 import {
@@ -29,7 +33,7 @@ import {
 } from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
 import { UserSessionService } from 'app/shared/core/domain/services/session.service';
-import { BrandListComponent } from '../list/list.component';
+import { Observable, map, startWith } from 'rxjs';
 
 @Component({
     selector: 'app-detail',
@@ -49,6 +53,9 @@ import { BrandListComponent } from '../list/list.component';
         MatOptionModule,
         MatDatepickerModule,
         TextFieldModule,
+        MatAutocompleteModule,
+        MatDivider,
+        AsyncPipe,
     ],
     templateUrl: './detail.component.html',
     styleUrl: './detail.component.scss',
@@ -60,7 +67,7 @@ export class BrandDetailComponent implements OnInit {
     editMode: boolean = false;
     //<--------------------- Data Variables ---------------------->
     brandId: string = null;
-    brandForm: UntypedFormGroup;
+    form: UntypedFormGroup;
     tenantId = null;
 
     brand = this._brandService.brand;
@@ -76,8 +83,9 @@ export class BrandDetailComponent implements OnInit {
         // private logger: LogService
     ) {}
 
-    originLocations = signal<LocalLocation[]>(pakistan_locations);
-    destinationLocations = signal<LocalLocation[]>(pakistan_locations);
+    originLocations$!: Observable<LocalLocation[]>;
+    destinationLocations$!: Observable<LocalLocation[]>;
+    equipmentTypes = signal<EquipmentType[]>(equipmentTypes);
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle Hooks
@@ -95,6 +103,7 @@ export class BrandDetailComponent implements OnInit {
 
         // this._brandListComponent.matDrawer.open();
         this.initializeForm();
+        this.setUpAutoCompleteFilters();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -102,13 +111,19 @@ export class BrandDetailComponent implements OnInit {
     // -----------------------------------------------------------------------------------------------------
 
     initializeForm() {
-        this.brandForm = this._formBuilder.group({
-            origin: ['0', [Validators.required]],
-            destination: ['0', [Validators.required]],
-            pickupEarliest: ['0', [Validators.required]],
-            pickupLatest: ['0', [Validators.required]],
-            pickupHours: ['0', [Validators.required]],
-            dropoffHours: ['0', [Validators.required]],
+        this.form = this._formBuilder.group({
+            origin: ['', [Validators.required]],
+            destination: ['', [Validators.required]],
+            pickupEarliest: ['', [Validators.required]],
+            pickupLatest: ['', [Validators.required]],
+            pickupHours: ['', [Validators.required]],
+            dropoffHours: ['', [Validators.required]],
+            equipment: ['', [Validators.required]],
+            length: ['', [Validators.required]],
+            weight: ['', [Validators.required]],
+            comments: ['', [Validators.required]],
+            commodity: ['', [Validators.required]],
+            refId: ['', [Validators.required]],
             // status: ["0", [Validators.required]],
         });
         if (this.editMode) {
@@ -117,7 +132,7 @@ export class BrandDetailComponent implements OnInit {
     }
 
     patchForm(brand: BrandModel) {
-        this.brandForm.patchValue({
+        this.form.patchValue({
             name: brand.name,
             status: brand.status ? '0' : '1',
         });
@@ -126,18 +141,50 @@ export class BrandDetailComponent implements OnInit {
     // -----------------------------------------------------------------------------------------------------
     // @ Drawer Methods
     // -----------------------------------------------------------------------------------------------------
+    setUpAutoCompleteFilters() {
+        this.originLocations$ = this.form.get('origin').valueChanges.pipe(
+            startWith(''),
+            map((value) => {
+                const key = typeof value === 'string' ? value : value?.title;
+                return key
+                    ? this._filterInput(key)
+                    : pakistan_locations.slice();
+            })
+        );
 
-    // closeDrawer(): Promise<MatDrawerToggleResult> {
-    //     this._router.navigateByUrl('/loads');
-    //     return this._brandListComponent.matDrawer.close();
-    // }
+        this.destinationLocations$ = this.form
+            .get('destination')
+            .valueChanges.pipe(
+                startWith(''),
+                map((value) => {
+                    const key =
+                        typeof value === 'string' ? value : value?.title;
+                    return key
+                        ? this._filterInput(key)
+                        : pakistan_locations.slice();
+                })
+            );
+    }
+
+    private _filterInput(name: string): any[] {
+        const filterValue = name.toLowerCase();
+        return pakistan_locations.filter((role) =>
+            role.name.toLowerCase().includes(filterValue)
+        );
+    }
+
+    displayLocation(location: LocalLocation) {
+        return location && location.name
+            ? `${location.name} ,  ${location.country ?? ''}`
+            : '';
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Upload/Save Methods
     // -----------------------------------------------------------------------------------------------------
 
     save() {
-        let formData = this.brandForm.getRawValue();
+        let formData = this.form.getRawValue();
 
         const upload: BrandUpload = {
             id: this.brandId,
@@ -148,6 +195,6 @@ export class BrandDetailComponent implements OnInit {
 
         this._brandService
             .upsertBrands([upload])
-            .subscribe((res) => console.log('upload response:',res));
+            .subscribe((res) => console.log('upload response:', res));
     }
 }

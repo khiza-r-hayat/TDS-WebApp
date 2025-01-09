@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FuseMockApiService } from '@fuse/lib/mock-api';
+import { UserService } from 'app/core/user/user.service';
 import { user as userData } from 'app/mock-api/common/user/data';
 import { assign, cloneDeep } from 'lodash-es';
 
@@ -10,7 +11,17 @@ export class UserMockApi {
     /**
      * Constructor
      */
-    constructor(private _fuseMockApiService: FuseMockApiService) {
+    constructor(
+        private _fuseMockApiService: FuseMockApiService,
+        private _userService: UserService
+    ) {
+        this._userService.user$.subscribe((user) => {
+            this._user.id = user.id;
+            this._user.email = user.email;
+            this._user.name = user.name;
+            this._user.avatar = user.avatar;
+            this._user.roleId = user.roleId;
+        });
         // Register Mock API handlers
         this.registerHandlers();
     }
