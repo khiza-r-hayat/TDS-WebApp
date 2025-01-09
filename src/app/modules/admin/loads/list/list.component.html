@@ -13,22 +13,22 @@
     </mat-drawer-container> -->
     <!-- Main -->
     <!-- Header -->
-    <div class="bg-card">
+    <div class="bg-card gradient-background dark:bg-accent-700">
         <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-0">
             <div
-                class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-2 sm:my-12 md:my-12">
+                class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-8 sm:my-12 md:my-12">
                 <!-- Title -->
                 <div class="flex flex-auto items-center min-w-0">
                     <div class="flex flex-col min-w-0 ">
                         <ng-container *transloco="let t">
-                            <div class="text-4xl font-extrabold tracking-tight">Loads</div>
+                            <div class="text-4xl font-extrabold text-white tracking-tight">My Shipments</div>
                         </ng-container>
                     </div>
                 </div>
                 <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
                     <button class="bg-accent" mat-flat-button [routerLink]="['./add']" [color]="'accent'">
                         <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                        <span class="ml-2">Post Load</span>
+                        <span class="ml-2">Post Shipment</span>
                     </button>
                 </div>
 
@@ -37,7 +37,7 @@
         </div>
     </div>
     <!-- Table -->
-    <div class="flex-auto -mt-px">
+    <div class="flex-auto -mt-px mx-10">
         <div class="w-full max-w-screen-xl mx-auto">
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
@@ -45,7 +45,7 @@
                     <div class="p-6 flex flex-col sm:flex-row items-center justify-between">
                         <div>
                             <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
-                                Loads
+                                Shipments
                             </div>
                             <div class="text-secondary font-medium">Total {{this.brands().length}}
                             </div>

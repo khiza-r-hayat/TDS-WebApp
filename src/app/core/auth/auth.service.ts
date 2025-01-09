@@ -70,25 +70,28 @@ export class AuthService {
             switchMap((response: any) => {
                 // Store the access token in the local storage
                 const user = response.user as UserModel;
-                const session: LocalSession = {
-                    userId: response.user.id,
-                    token: response.accessToken,
-                    tokenType: response.tokenType,
-                };
-
-                this.sessionObject = session;
-
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = {
+                const newUser: User = {
                     id: user.id,
                     avatar: user.photo,
                     name: user.title,
                     email: user.email,
                     roleId: user.roleId,
-                } as User;
+                };
+                
+                
+                const session: LocalSession = {
+                    user: newUser,
+                    token: response.accessToken,
+                    tokenType: response.tokenType,
+                };
+                
+                this.sessionObject = session;
+                
+                // Store the user on the user service
+                this._userService.user = newUser;
+
+                // Set the authenticated flag to true
+                this._authenticated = true;
 
                 // Return a new observable with the response
                 return of(response);
@@ -103,7 +106,7 @@ export class AuthService {
         // Sign in using the token
         return this._httpClient
             .post('api/auth/sign-in-with-token', {
-                accessToken: this.sessionObject.token,
+                session: this.sessionObject,
             })
             .pipe(
                 catchError(() =>

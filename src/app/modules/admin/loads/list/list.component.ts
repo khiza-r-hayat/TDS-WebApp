@@ -28,13 +28,11 @@ import { ConfirmationDialogs } from "app/shared/core/classes/confirmation_dialog
 import { CONSTANTS } from "app/shared/core/classes/utility";
 import { BrandModel } from "app/shared/core/domain/models/brand.model";
 import { BrandService } from "app/shared/core/domain/services/brand.service";
-import { LogService } from "app/shared/logs/log.service";
 
 @Component({
   selector: "app-list",
   standalone: true,
   imports: [
-    RouterOutlet,
     MatSidenavModule,
     MatMenuModule,
     MatFormField,
@@ -50,9 +48,8 @@ import { LogService } from "app/shared/logs/log.service";
     TranslocoModule,
   ],
   templateUrl: "./list.component.html",
-  styleUrl: "./list.component.scss",
 })
-export class BrandListComponent {
+export class LoadListComponent {
   @ViewChild("matDrawer", { static: true }) matDrawer: MatDrawer;
   // dataSourceBulkImport: MatTableDataSource<any> = new MatTableDataSource();
   @ViewChild(MatPaginator) paginator: MatPaginator;

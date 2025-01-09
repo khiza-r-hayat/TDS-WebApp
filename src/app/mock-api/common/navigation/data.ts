@@ -120,20 +120,20 @@ const superAdminNav: FuseNavigationItem[] = [
   // },
   {
     id: "load",
-    title: "Load Management",
+    title: "Shipment Management",
     type: "collapsable",
     icon: "heroicons_outline:check-badge",
     children: [
       {
         id: "load.loads",
-        title: "Loads",
+        title: "My Shipments",
         type: "basic",
         icon: "heroicons_outline:tag",
         link: "/loads",
       },
       {
         id: "load.search",
-        title: "Search Load",
+        title: "Search Shipment",
         type: "basic",
         icon: "heroicons_outline:cube",
         link: "/search",

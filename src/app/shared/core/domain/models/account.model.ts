@@ -18,7 +18,7 @@ export interface UserModel {
   photo?: string;
   subscriptionId?: string;
   createdInFirebase?: boolean;
-  role?: Roles;
+  role?: Role;
 }
 
 export interface UserModelUpload {
@@ -176,6 +176,11 @@ export interface AccountPagination {
   lastPage: number;
   startIndex: number;
   endIndex: number;
+}
+
+export interface Role {
+  id: number;
+  title: string;
 }
 
 export interface Roles {

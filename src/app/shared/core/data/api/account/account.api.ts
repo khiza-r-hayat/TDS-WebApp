@@ -11,7 +11,6 @@ import {
   AccountUpload,
   UserModel,
 } from "app/shared/core/domain/models/account.model";
-import { LogService } from "app/shared/logs/log.service";
 import { UserMapper } from "./user.mapper";
 
 @Injectable({
@@ -38,9 +37,9 @@ export class AccountAPI implements AccountRepository {
     });
   }
 
-  getAccountById(id: string): Observable<UserModel> {
+  getAccountById(id: string): Observable<UserModel[]> {
     return this.apollo
-      .subscribe<AccountModel>({
+      .subscribe<UserModel[]>({
         query: Query.getAccountByIdQL,
         variables: {
           id: id,

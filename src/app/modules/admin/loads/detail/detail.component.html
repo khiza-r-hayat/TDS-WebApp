@@ -1,19 +1,18 @@
 <div class="flex flex-col w-full">
 
-    <!-- Header -->
-    <div class="flex items-center w-full h-20 sm:h-30 px-8 sm:px-12 gradient-background dark:bg-accent-700">
-        <div class="mb-3 text-5xl font-bold text-white truncate">Load Details</div>
-    </div>
-
     <!-- Contact form -->
     <div class="flex justify-center">
-        <div class="bg-card rounded-3xl my-10 w-full mx-4 sm:w-3/4">
+        <div class="bg-card rounded-3xl w-full m-4 sm:w-4/5">
+            <div
+                class="flex items-center w-full h-15 sm:h-20 px-8 sm:px-12 gradient-background dark:bg-accent-700 rounded-t-xl">
+                <div class="text-3xl font-bold text-white truncate">Shipment Details</div>
+            </div>
             <form [formGroup]="form">
                 <!-- grid sm:grid-cols-6 gap-6  -->
                 <div class="w-full mb-10 p-10">
                     <!-- Location and Timing -->
                     <div class="flex flex-col sm:col-span-6 mb-4">
-                        <strong> Location and Timing</strong>
+                        <strong class="text-lg"> Location and Timing</strong>
                         <mat-divider class="my-2"></mat-divider>
                     </div>
                     <div class="flex flex-col sm:flex-row">
@@ -50,8 +49,6 @@
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
                             <mat-label>Pickup Earliest</mat-label>
-                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
                             <input matInput placeholder="Pickup Earliest" [matDatepicker]="pickupEarliest"
                                 [formControlName]="'pickupEarliest'" min="0">
                             <mat-datepicker-toggle matSuffix [for]="pickupEarliest"></mat-datepicker-toggle>
@@ -62,8 +59,6 @@
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
                             <mat-label>Pickup Latest</mat-label>
-                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                                [svgIcon]="'heroicons_solid:calendar'"></mat-icon>
                             <input matInput [matDatepicker]="pickupLatest" placeholder="Pickup Latest"
                                 [formControlName]="'pickupLatest'" min="0">
                             <mat-datepicker-toggle matSuffix [for]="pickupLatest"></mat-datepicker-toggle>
@@ -71,7 +66,6 @@
                         </mat-form-field>
 
                         <div class="mx-2"></div>
-
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
                             <mat-label>Pick Up Hours</mat-label>
@@ -89,7 +83,7 @@
                     </div>
                     <!-- Equipment Details -->
                     <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong> Equipment Details</strong>
+                        <strong class="text-lg"> Equipment Details</strong>
                         <mat-divider class="my-2"></mat-divider>
                     </div>
                     <div class="flex flex-col sm:flex-row">
@@ -101,9 +95,10 @@
                                 [svgIcon]="'heroicons_solid:truck'"></mat-icon>
                             <mat-select [formControlName]="'equipment'">
                                 @for (item of equipmentTypes(); track $index) {
-                                <mat-option [value]="item.id" class=" px-2 flex justify-between">
-                                    <p>{{item.name}}</p>
-                                    <p>{{item.short}}</p>
+                                <mat-option [value]="item.id">
+                                    <span>{{item.name}}</span>
+                                    <span class="px-4">{{' - '}}</span>
+                                    <span>{{item.short}}</span>
                                 </mat-option>
                                 }
                             </mat-select>
@@ -112,14 +107,14 @@
                         <div class="mx-2"></div>
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Length</mat-label>
+                            <mat-label>Length (ft)</mat-label>
                             <input matInput placeholder="Length (ft)" formControlName="length" type="number">
                         </mat-form-field>
 
                         <div class="mx-1"></div>
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Weight</mat-label>
+                            <mat-label>Weight (kg)</mat-label>
                             <input matInput placeholder="Weight (kg)" formControlName="weight" type="number">
                         </mat-form-field>
 
@@ -127,19 +122,20 @@
 
                     <!-- Additional Information -->
                     <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong> Additional Information</strong>
+                        <strong class="text-lg"> Additional Information</strong>
                         <mat-divider class="my-2"></mat-divider>
                     </div>
                     <div class="flex flex-col sm:flex-row">
                         <!-- class="sm:col-span-1" -->
 
-                        <mat-form-field class="fuse-mat-no-subscript w-3/6">
+                        <mat-form-field class="fuse-mat-no-subscript w-full sm:w-3/6">
                             <mat-label>Comments</mat-label>
-                            <input matInput placeholder="Comments" formControlName="comments" type="text">
+                            <textarea class="w-full h-32" matInput placeholder="Comments" formControlName="comments"
+                                type="text"></textarea>
                         </mat-form-field>
 
                         <div class="mx-2"></div>
-                        <div class="flex flex-col w-3/6">
+                        <div class="flex flex-col w-full sm:w-3/6">
                             <mat-form-field class="fuse-mat-no-subscript w-full">
                                 <mat-label>Commodity</mat-label>
                                 <input matInput placeholder="Commodity" formControlName="commodity" type="text">
@@ -154,6 +150,42 @@
                         </div>
 
                     </div>
+
+                    <!-- Contact Info -->
+                    <div class="flex flex-col sm:col-span-6 my-4">
+                        <strong class="text-lg">Contacts And Rate</strong>
+                        <mat-divider class="my-2"></mat-divider>
+                    </div>
+                    <div class="flex flex-col sm:flex-row">
+                        <div class="flex flex-col w-full sm:w-3/6">
+                            <div class="flex flex-col sm:flex-row">
+                                <p>Contacts can be updated in</p>
+                                <a class="font-bold text-primary-600 ml-1 cursor-pointer">your profile</a>
+                            </div>
+
+                            <mat-radio-group class="flex flex-col" formControlName="contact">
+                                <mat-radio-button value="phone">Phone</mat-radio-button>
+                                <mat-radio-button value="email">Email</mat-radio-button>
+                            </mat-radio-group>
+
+                        </div>
+                        <mat-form-field class="fuse-mat-no-subscript w-full mt-4 sm:w-3/6">
+                            <mat-label>Rate/Trip</mat-label>
+                            <input matInput placeholder="Rate/Trip" formControlName="rate" type="text"
+                                (input)="formatAmount($event)">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- Booking and Rate -->
+                    <!-- <div class="flex flex-col sm:col-span-6 my-4">
+                        <strong class="text-lg">Booking and Rate</strong>
+                        <mat-divider class="my-2"></mat-divider>
+                    </div>
+                    <mat-form-field class="fuse-mat-no-subscript w-3/6">
+                        <mat-label>Rate/Trip</mat-label>
+                        <input matInput placeholder="Rate/Trip" formControlName="rate" type="text" (input)="formatRate()">
+                    </mat-form-field> -->
+
                 </div>
 
                 <!-- <div class="py-10 flex items-center justify-between"> -->
@@ -161,26 +193,16 @@
                 <!-- Add data entry locally -->
                 <div class="flex flex-grow justify-center mb-5">
 
-                    <button mat-button [matTooltip]="'Cancel'" [routerLink]="['../']">
-                        Cancel
+                    <button mat-stroked-button [matTooltip]="'Cancel'" [routerLink]="['../']">
+                        <p class="text-primary-600">Cancel</p>
                     </button>
 
                     <!-- Save -->
                     <button class="ml-2" mat-flat-button [color]="'primary'" [disabled]="form.invalid || isSaving()"
                         [matTooltip]="'Save'" (click)="save()">
-                        Save
+                        <p class="px-10">Post</p>
                     </button>
                 </div>
-                <!-- upload to database -->
-                <!-- <div>
-                          <button [disabled]="!this.selectedTeamMembers().length && !teams().length" mat-raised-button
-                              color="primary" (click)="uploadTeams()">
-                              Save
-                              <mat-icon class="icon-size-4" svgIcon="heroicons_outline:chevron-double-right"></mat-icon>
-                          </button>
-                      </div> -->
-
-                <!-- </div> -->
             </form>
         </div>
     </div>

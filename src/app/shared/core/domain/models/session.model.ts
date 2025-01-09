@@ -1,3 +1,4 @@
+import { User } from "app/core/user/user.types";
 import { AccountModel, UserModel } from "./account.model";
 
 export interface UserSession {
@@ -27,7 +28,7 @@ export interface UserSessionUpload {
 }
 
 export interface LocalSession {
-  userId: string;
+  user: User;
   token:string;
   tokenType:string;
 }

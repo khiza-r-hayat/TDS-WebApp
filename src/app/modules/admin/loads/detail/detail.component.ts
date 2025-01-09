@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, HostListener, OnInit, signal } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -17,6 +17,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -27,10 +28,7 @@ import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
-import {
-    BrandModel,
-    BrandUpload,
-} from 'app/shared/core/domain/models/brand.model';
+import { BrandModel } from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
 import { UserSessionService } from 'app/shared/core/domain/services/session.service';
 import { Observable, map, startWith } from 'rxjs';
@@ -54,13 +52,13 @@ import { Observable, map, startWith } from 'rxjs';
         MatDatepickerModule,
         TextFieldModule,
         MatAutocompleteModule,
+        MatRadioModule,
         MatDivider,
         AsyncPipe,
     ],
     templateUrl: './detail.component.html',
-    styleUrl: './detail.component.scss',
 })
-export class BrandDetailComponent implements OnInit {
+export class LoadDetailComponent implements OnInit {
     //<--------------------- Flag Variables ---------------------->
 
     isSaving = signal<boolean>(false);
@@ -72,6 +70,9 @@ export class BrandDetailComponent implements OnInit {
 
     brand = this._brandService.brand;
     locations = pakistan_locations;
+
+    // minDate = Date();
+    // maxDate = Date();
 
     constructor(
         private _formBuilder: UntypedFormBuilder,
@@ -115,16 +116,17 @@ export class BrandDetailComponent implements OnInit {
             origin: ['', [Validators.required]],
             destination: ['', [Validators.required]],
             pickupEarliest: ['', [Validators.required]],
-            pickupLatest: ['', [Validators.required]],
-            pickupHours: ['', [Validators.required]],
-            dropoffHours: ['', [Validators.required]],
+            pickupLatest: '',
+            pickupHours: '',
+            dropoffHours: '',
             equipment: ['', [Validators.required]],
             length: ['', [Validators.required]],
             weight: ['', [Validators.required]],
             comments: ['', [Validators.required]],
             commodity: ['', [Validators.required]],
             refId: ['', [Validators.required]],
-            // status: ["0", [Validators.required]],
+            contact: ['phone', [Validators.required]],
+            rate: ['', [Validators.required]],
         });
         if (this.editMode) {
             this.patchForm(this.brand());
@@ -139,8 +141,26 @@ export class BrandDetailComponent implements OnInit {
     }
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Drawer Methods
+    // @ Public Methods
     // -----------------------------------------------------------------------------------------------------
+
+    @HostListener('input', ['$event'])
+    formatAmount(event: any) {
+        const input = event.target;
+        let value = input.value.replace(/[^0-9]/g, '');
+
+        // Store cursor position relative to the number
+        const cursorPos = input.selectionStart - 4; // Adjust for "PKR "
+
+        const formattedValue = `PKR ${Number(value).toLocaleString()} /Trip`;
+        input.value = formattedValue;
+
+        // Place cursor back in number section
+        const numberEndIndex = formattedValue.indexOf(' /Trip');
+        const newPos = Math.min(cursorPos + 4, numberEndIndex);
+        input.setSelectionRange(newPos, newPos);
+    }
+
     setUpAutoCompleteFilters() {
         this.originLocations$ = this.form.get('origin').valueChanges.pipe(
             startWith(''),
@@ -186,15 +206,16 @@ export class BrandDetailComponent implements OnInit {
     save() {
         let formData = this.form.getRawValue();
 
-        const upload: BrandUpload = {
-            id: this.brandId,
-            name: formData.name,
-            tenantId: this.tenantId,
-            status: formData === '0',
-        };
+        console.log('form value:', formData);
+        // const upload: BrandUpload = {
+        //     id: this.brandId,
+        //     name: formData.name,
+        //     tenantId: this.tenantId,
+        //     status: formData === '0',
+        // };
 
-        this._brandService
-            .upsertBrands([upload])
-            .subscribe((res) => console.log('upload response:', res));
+        // this._brandService
+        //     .upsertBrands([upload])
+        //     .subscribe((res) => console.log('upload response:', res));
     }
 }

@@ -89,7 +89,9 @@ export class AuthMockApi {
                                                             cloneDeep(
                                                                 firebaseUser
                                                             ),
-                                                        user: cloneDeep(user[0]),
+                                                        user: cloneDeep(
+                                                            user[0]
+                                                        ),
                                                         accessToken: idToken,
                                                         tokenType: 'bearer',
                                                     },
@@ -101,9 +103,6 @@ export class AuthMockApi {
                                                 observer.next([404, false]);
                                                 observer.complete();
                                             }
-                                        },
-                                        (error) => {
-                                            //console.log(error);
                                         }
                                     );
                             }
@@ -124,15 +123,15 @@ export class AuthMockApi {
             .onPost('api/auth/sign-in-with-token')
             .reply(({ request }) => {
                 // Get the access token
-                const accessToken = request.body.accessToken;
+                const session = request.body.session;
 
                 // Verify the token
-                if (this._verifyJWTToken(accessToken)) {
+                if (this._verifyJWTToken(session.token)) {
                     return [
                         200,
                         {
-                            user: cloneDeep(this._user),
-                            accessToken: accessToken, //this._generateJWTToken(),
+                            user: cloneDeep(session.user),
+                            accessToken: session.token, //this._generateJWTToken(),
                             tokenType: 'bearer',
                         },
                     ];

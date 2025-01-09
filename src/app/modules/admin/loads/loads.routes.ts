@@ -3,32 +3,32 @@ import {
   RouterStateSnapshot,
   Routes,
 } from "@angular/router";
-import { BrandsComponent } from "./brands.component";
-import { BrandListComponent } from "./list/list.component";
-import { brandResolver, brandsResolver, myLoadsResolver } from "./brand.resolver";
-import { BrandDetailComponent } from "./detail/detail.component";
+import { LoadsComponent } from "./loads.component";
+import { LoadListComponent } from "./list/list.component";
+import { brandResolver, brandsResolver, myLoadsResolver } from "./loads.resolver";
+import { LoadDetailComponent } from "./detail/detail.component";
 
 export default [
   {
     path: "",
-    component: BrandsComponent,
+    component: LoadsComponent,
     children: [
       {
         path: "",
         pathMatch: "full",
-        component: BrandListComponent,
+        component: LoadListComponent,
         // resolve: {
         //   myLoads: myLoadsResolver,
         // },
       },
       {
         path: "add",
-        component: BrandDetailComponent,
+        component: LoadDetailComponent,
         // canDeactivate: [canDeactivateDetails],
       },
       {
         path: ":id",
-        component: BrandDetailComponent,
+        component: LoadDetailComponent,
         // resolve: {
         //   brand: brandResolver,
         // },
