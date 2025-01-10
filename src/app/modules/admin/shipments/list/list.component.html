@@ -15,8 +15,7 @@
     <!-- Header -->
     <div class="bg-card gradient-background dark:bg-accent-700">
         <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-0">
-            <div
-                class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-8 sm:my-12 md:my-12">
+            <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-8 sm:my-12 md:my-12">
                 <!-- Title -->
                 <div class="flex flex-auto items-center min-w-0">
                     <div class="flex flex-col min-w-0 ">
@@ -47,7 +46,7 @@
                             <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
                                 Shipments
                             </div>
-                            <div class="text-secondary font-medium">Total {{this.brands().length}}
+                            <div class="text-secondary font-medium">Total {{this.shipments().length}}
                             </div>
                         </div>
                         <div class="flex flex-row flex-wrap items-center">
@@ -74,16 +73,15 @@
                             }
                         </div>
                         <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3 max-w-60">
-                            <button [disabled]="!enableActions()" class="hidden sm:inline-flex ml-3"
-                                mat-flat-button [color]="'primary'" [matMenuTriggerFor]="impressionsMenu">
+                            <button [disabled]="!enableActions()" class="hidden sm:inline-flex ml-3" mat-flat-button
+                                [color]="'primary'" [matMenuTriggerFor]="impressionsMenu">
                                 <span>Actions</span>
                                 <mat-icon class="icon-size-5"
                                     [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
                             </button>
                             <mat-menu class="overflow-hidden max-w-64" #impressionsMenu="matMenu">
                                 <button (click)="remove()" class="hidden sm:inline-flex " mat-flat-button>
-                                    <mat-icon class="icon-size-5"
-                                        [svgIcon]="'heroicons_solid:trash'"></mat-icon>
+                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
                                     <span class="ml-2">Delete Selected</span>
                                 </button>
                             </mat-menu>
@@ -109,12 +107,12 @@
                     </div>
                     <!-- Table -->
                     <div class="flex flex-col flex-auto mx-6 overflow-x-auto">
-                        <table class="w-full bg-transparent overflow-y-visible" mat-table
-                            [dataSource]="dataSource" [trackBy]="trackByFn" matSort>
+                        <table class="w-full bg-transparent overflow-y-visible" mat-table [dataSource]="dataSource"
+                            [trackBy]="trackByFn" matSort>
 
                             <ng-container matColumnDef="select">
                                 <th class="pmt-header" mat-header-cell *matHeaderCellDef>
-                                    @if(brands().length){
+                                    @if(shipments().length){
                                     <mat-checkbox #selectAll (change)="masterToggle($event)"></mat-checkbox>
                                     }
                                 </th>
@@ -127,34 +125,93 @@
                                     </span>
                                 </td>
                             </ng-container>
-                            <ng-container matColumnDef="title">
+                            <ng-container matColumnDef="age">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                    Brand
+                                    Age
                                 </th>
-                                <td class="px-2" mat-cell *matCellDef="let brand">
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        {{brand.name}}
+                                        0m
+                                        <!-- {{shipment.createdAt | date:'MMM dd, y @ h:mm a'}} -->
                                     </span>
                                 </td>
                             </ng-container>
-                            <ng-container matColumnDef="products">
+                            <ng-container matColumnDef="pickUp">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                    Product Count
+                                    Pick Up
                                 </th>
-                                <td class="px-2" mat-cell *matCellDef="let brand">
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        {{brand.products.length}}
+                                        {{shipment.pickupEarliest | date:'M/d'}} - {{shipment.pickupLatest |
+                                        date:'M/d'}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="trip">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Trip
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
+                                    <div class="flex flex-col">
+                                        <span class="pr-6 whitespace-nowrap">
+                                            {{ (shipment.originId | fuseFindByKey:'id':locations).name}}
+                                        </span>
+                                        <span class="pr-6 whitespace-nowrap">
+                                            {{ (shipment.destinationId | fuseFindByKey:'id':locations).name}}
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="ref">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Reference
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{shipment.refId}}
                                     </span>
                                 </td>
                             </ng-container>
 
-                            <ng-container matColumnDef="createdAt">
+                            <ng-container matColumnDef="equipment">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                    Created On
+                                    Equipment
                                 </th>
-                                <td class="px-2" mat-cell *matCellDef="let brand">
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        {{ brand.createdAt | date:'MMM dd, y @ h:mm a' }}
+                                        {{ (shipment.equipmentId | fuseFindByKey:'id':equipmentTypes).name}}
+                                    </span>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="rate">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Rate
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{ shipment.rate }}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="bids">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Bids
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        <!-- {{ shipment.rate }} -->
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="status">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Status
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let shipment">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        <!-- {{ shipment.rate }} -->
                                     </span>
                                 </td>
                             </ng-container>
@@ -163,11 +220,11 @@
                                 <th class="mt-header" mat-header-cell *matHeaderCellDef>
                                     Action
                                 </th>
-                                <td class="pr-2" mat-cell *matCellDef="let brand">
+                                <td class="pr-2" mat-cell *matCellDef="let shipment">
                                     <div class="flex mt-2">
                                         <span class="font-medium mr-2 whitespace-nowrap">
                                             <a [routerLinkActive]="'active'"
-                                                [routerLink]="['/loads/' + brand.id ]">
+                                                [routerLink]="['/shipments/' + shipment.id ]">
                                                 <button [matTooltip]="'Edit User'">
                                                     <mat-icon [svgIcon]="'heroicons_outline:pencil'"
                                                         color="primary"></mat-icon>
@@ -176,9 +233,9 @@
                                         </span>
 
                                         <span class="font-medium ml-1 whitespace-nowrap">
-                                            <button (click)="remove(brand)" [matTooltip]="'Remove Tenant'">
-                                                <mat-icon class="icon-size-7"
-                                                    [svgIcon]="'heroicons_solid:trash'" color="warn"></mat-icon>
+                                            <button (click)="remove(shipment)" [matTooltip]="'Remove Tenant'">
+                                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_solid:trash'"
+                                                    color="warn"></mat-icon>
                                             </button>
                                         </span>
                                     </div>

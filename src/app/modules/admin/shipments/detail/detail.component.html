@@ -108,7 +108,7 @@
 
                         <mat-form-field class="fuse-mat-no-subscript w-full">
                             <mat-label>Length (ft)</mat-label>
-                            <input matInput placeholder="Length (ft)" formControlName="length" type="number">
+                            <input matInput placeholder="Length (ft)" formControlName="availableLength" type="number">
                         </mat-form-field>
 
                         <div class="mx-1"></div>
@@ -171,8 +171,8 @@
                         </div>
                         <mat-form-field class="fuse-mat-no-subscript w-full mt-4 sm:w-3/6">
                             <mat-label>Rate/Trip</mat-label>
-                            <input matInput placeholder="Rate/Trip" formControlName="rate" type="text"
-                                (input)="formatAmount($event)">
+                            <input matInput placeholder="Rate/Trip" formControlName="rate" type="text">
+                            <!-- (input)="formatAmount($event)" -->
                         </mat-form-field>
                     </div>
 

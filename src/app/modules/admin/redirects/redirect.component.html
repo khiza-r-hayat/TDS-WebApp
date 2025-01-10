@@ -1,0 +1,9 @@
+<div class="relative flex flex-col flex-auto items-center justify-center">
+    <div class="flex flex-col items-center justify-center w-1/2 h-1/2 sm:max-w-1/2 sm:max-h-1/2">
+        @if(redirectType()===401){
+        <img src="images/error_images/401_unauthorized.svg" alt="401_unauthorized">
+        }@else {
+        <img src="images/error_images/404_notfound.svg" alt="404_notfound">
+        }
+    </div>
+</div>

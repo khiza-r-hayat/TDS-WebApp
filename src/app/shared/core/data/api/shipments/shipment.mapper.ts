@@ -1,0 +1,53 @@
+import {
+    ShipmentModel,
+    ShipmentResponse,
+} from 'app/shared/core/domain/models/brand.model';
+import { Mapper } from '../../../base/mapper';
+
+export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
+    mapFrom(param: ShipmentResponse): any {
+        return {
+            id: param.id,
+            userId: param.userId,
+            originId: param.originId,
+            destinationId: param.destinationId,
+            pickupEarliest: param.pickupEarliest,
+            pickupLatest: param.pickupLatest,
+            pickupHours: param.pickupHours,
+            dropoffHours: param.dropoffHours,
+            equipmentId: param.equipmentId,
+            availableLength: param.availableLength,
+            weight: param.weight,
+            comments: param.comments,
+            commodity: param.commodity,
+            refId: param.refId,
+            contact: param.contact,
+            rate: param.rate,
+            createdAt: param.createdAt,
+            updatedAt: param.updatedAt,
+        };
+    }
+
+    mapTo(param: ShipmentModel): ShipmentResponse {
+        return {
+            id: param.id,
+            userId: param.userId,
+            originId: param.originId,
+            destinationId: param.destinationId,
+            pickupEarliest: param.pickupEarliest,
+            pickupLatest: param.pickupLatest,
+            pickupHours: param.pickupHours,
+            dropoffHours: param.dropoffHours,
+            equipmentId: param.equipmentId,
+            availableLength: param.availableLength,
+            weight: param.weight,
+            comments: param.comments,
+            commodity: param.commodity,
+            refId: param.refId,
+            contact: param.contact,
+            rate: param.rate,
+            createdAt: param.createdAt,
+            updatedAt: param.updatedAt,
+        };
+    }
+}

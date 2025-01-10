@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { AsyncPipe } from '@angular/common';
-import { Component, HostListener, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -21,6 +21,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { UserService } from 'app/core/user/user.service';
+import { User } from 'app/core/user/user.types';
 import { Utility } from 'app/shared/core/classes/utility';
 import {
     EquipmentType,
@@ -28,9 +30,13 @@ import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
-import { BrandModel } from 'app/shared/core/domain/models/brand.model';
+import { ShipmentHelper } from 'app/shared/core/domain/helpers/shipment.helper';
+import {
+    BrandModel,
+    ShipmentModel,
+} from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
-import { UserSessionService } from 'app/shared/core/domain/services/session.service';
+import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { Observable, map, startWith } from 'rxjs';
 
 @Component({
@@ -58,15 +64,15 @@ import { Observable, map, startWith } from 'rxjs';
     ],
     templateUrl: './detail.component.html',
 })
-export class LoadDetailComponent implements OnInit {
+export class ShipmentDetailComponent implements OnInit {
     //<--------------------- Flag Variables ---------------------->
 
     isSaving = signal<boolean>(false);
     editMode: boolean = false;
     //<--------------------- Data Variables ---------------------->
-    brandId: string = null;
+    shipmentId: string = null;
     form: UntypedFormGroup;
-    tenantId = null;
+    userId = null;
 
     brand = this._brandService.brand;
     locations = pakistan_locations;
@@ -80,7 +86,8 @@ export class LoadDetailComponent implements OnInit {
         private _activatedRoute: ActivatedRoute,
         // private _brandListComponent: BrandListComponent,
         private _brandService: BrandService,
-        private _sessionService: UserSessionService
+        private _shipmentService: ShipmentService,
+        private _userService: UserService
         // private logger: LogService
     ) {}
 
@@ -94,12 +101,15 @@ export class LoadDetailComponent implements OnInit {
 
     ngOnInit(): void {
         // this.tenantId = this._sessionService.session().tenantId;
+        this._userService.user$.subscribe((user: User) => {
+            this.userId = user.id;
+        });
 
         if (!this._router.url.includes('add')) {
             this.editMode = true;
-            this.brandId = this._activatedRoute.snapshot.paramMap.get('id');
+            this.shipmentId = this._activatedRoute.snapshot.paramMap.get('id');
         } else {
-            this.brandId = Utility.generateUUID();
+            this.shipmentId = Utility.generateUUID();
         }
 
         // this._brandListComponent.matDrawer.open();
@@ -120,11 +130,11 @@ export class LoadDetailComponent implements OnInit {
             pickupHours: '',
             dropoffHours: '',
             equipment: ['', [Validators.required]],
-            length: ['', [Validators.required]],
+            availableLength: ['', [Validators.required]],
             weight: ['', [Validators.required]],
-            comments: ['', [Validators.required]],
-            commodity: ['', [Validators.required]],
-            refId: ['', [Validators.required]],
+            comments: '',
+            commodity: '',
+            refId: '',
             contact: ['phone', [Validators.required]],
             rate: ['', [Validators.required]],
         });
@@ -141,25 +151,24 @@ export class LoadDetailComponent implements OnInit {
     }
 
     // -----------------------------------------------------------------------------------------------------
-    // @ Public Methods
+    // @ Form Modification Methods
     // -----------------------------------------------------------------------------------------------------
 
-    @HostListener('input', ['$event'])
-    formatAmount(event: any) {
-        const input = event.target;
-        let value = input.value.replace(/[^0-9]/g, '');
+    // formatAmount(event: any) {
+    //     const input = event.target;
+    //     let value = input.value.replace(/[^0-9]/g, '');
 
-        // Store cursor position relative to the number
-        const cursorPos = input.selectionStart - 4; // Adjust for "PKR "
+    //     // Store cursor position relative to the number
+    //     const cursorPos = input.selectionStart - 4; // Adjust for "PKR "
 
-        const formattedValue = `PKR ${Number(value).toLocaleString()} /Trip`;
-        input.value = formattedValue;
+    //     const formattedValue = `PKR ${Number(value).toLocaleString()} /Trip`;
+    //     input.value = formattedValue;
 
-        // Place cursor back in number section
-        const numberEndIndex = formattedValue.indexOf(' /Trip');
-        const newPos = Math.min(cursorPos + 4, numberEndIndex);
-        input.setSelectionRange(newPos, newPos);
-    }
+    //     // Place cursor back in number section
+    //     const numberEndIndex = formattedValue.indexOf(' /Trip');
+    //     const newPos = Math.min(cursorPos + 4, numberEndIndex);
+    //     input.setSelectionRange(newPos, newPos);
+    // }
 
     setUpAutoCompleteFilters() {
         this.originLocations$ = this.form.get('origin').valueChanges.pipe(
@@ -206,16 +215,35 @@ export class LoadDetailComponent implements OnInit {
     save() {
         let formData = this.form.getRawValue();
 
-        console.log('form value:', formData);
-        // const upload: BrandUpload = {
-        //     id: this.brandId,
-        //     name: formData.name,
-        //     tenantId: this.tenantId,
-        //     status: formData === '0',
+        // const upload: ShipmentModel = {
+        //     id: this.shipmentId,
+        //     userId: this._userService.user.id,
+        //     originId: formData.origin.id,
+        //     destinationId: formData.destination.id,
+        //     pickupEarliest: formData.pickupEarliest,
+        //     pickupLatest: formData.pickupLatest,
+        //     pickupHours: formData.pickupHours,
+        //     dropoffHours: formData.dropoffHours,
+        //     equipmentId: formData.equipment.id,
+        //     availableLength: formData.availableLength,
+        //     weight: formData.weight,
+        //     comments: formData.comments,
+        //     commodity: formData.commodity,
+        //     refId: formData.refId,
+        //     contact: formData.contact,
+        //     rate: formData.rate,
         // };
+        const upload: ShipmentModel =
+            ShipmentHelper.generateShipmentUploadObject(
+                formData,
+                this.shipmentId,
+                this.userId
+            );
 
-        // this._brandService
-        //     .upsertBrands([upload])
-        //     .subscribe((res) => console.log('upload response:', res));
+        console.log('form value:', upload);
+
+        this._shipmentService
+            .upsertShipments([upload])
+            .subscribe((res) => console.log('upload response:', res));
     }
 }
