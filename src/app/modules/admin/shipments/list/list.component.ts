@@ -29,6 +29,7 @@ import {
 import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
+import { ShipmentAgePipe } from '../pipes/shipment-age-pipe/shipment-age.pipe';
 
 @Component({
     selector: 'app-list',
@@ -48,6 +49,7 @@ import { ShipmentService } from 'app/shared/core/domain/services/shipment.servic
         DatePipe,
         TranslocoModule,
         FuseFindByKeyPipe,
+        ShipmentAgePipe
     ],
     templateUrl: './list.component.html',
 })
@@ -88,7 +90,6 @@ export class ShipmentListComponent {
     searchText = signal<string>('');
 
     constructor(
-        private _brandService: BrandService,
         private _shipmentService: ShipmentService,
         private _confirmationDialogs: ConfirmationDialogs,
         private _router: Router,

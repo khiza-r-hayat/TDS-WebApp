@@ -25,7 +25,7 @@
                             <mat-autocomplete autoActiveFirstOption #autoO="matAutocomplete"
                                 [displayWith]="displayLocation">
                                 @for (item of originLocations$ |async; track $index) {
-                                <mat-option [value]="item"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
                                 }
                             </mat-autocomplete>
                         </mat-form-field>
@@ -39,7 +39,7 @@
                             <mat-autocomplete autoActiveFirstOption #autoD="matAutocomplete"
                                 [displayWith]="displayLocation">
                                 @for (item of destinationLocations$ |async; track $index) {
-                                <mat-option [value]="item"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
+                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
                                 }
                             </mat-autocomplete>
                         </mat-form-field>
@@ -160,7 +160,7 @@
                         <div class="flex flex-col w-full sm:w-3/6">
                             <div class="flex flex-col sm:flex-row">
                                 <p>Contacts can be updated in</p>
-                                <a class="font-bold text-primary-600 ml-1 cursor-pointer">your profile</a>
+                                <a class="font-bold text-primary-600 ml-1 cursor-pointer" (click)="goToProfile()">your profile</a>
                             </div>
 
                             <mat-radio-group class="flex flex-col" formControlName="contact">

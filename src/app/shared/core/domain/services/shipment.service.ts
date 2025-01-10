@@ -10,7 +10,7 @@ import { ShipmentRepository } from '../repository/shipment.repository';
 export class ShipmentService {
     // Private signals
     private _shipment = signal<ShipmentModel | null>(null);
-    private _shipments = signal<ShipmentModel[] | null>(null);
+    private _shipments = signal<ShipmentModel[]>([]);
 
     private api = inject(ShipmentRepository);
     // private logger = inject(LogService);
@@ -133,7 +133,7 @@ export class ShipmentService {
     }
 
     addShipmentsLocally(shipments: ShipmentModel[]) {
-        let shipmentList: ShipmentModel[] = [...this._shipments()];
+        let shipmentList: ShipmentModel[] = this._shipments();
 
         for (let shipment of shipments) {
             const index = shipmentList.findIndex((s) => s.id == shipment.id);

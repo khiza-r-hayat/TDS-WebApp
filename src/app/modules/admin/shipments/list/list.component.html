@@ -131,8 +131,7 @@
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        0m
-                                        <!-- {{shipment.createdAt | date:'MMM dd, y @ h:mm a'}} -->
+                                        {{shipment.createdAt | shipmentagepipe}}
                                     </span>
                                 </td>
                             </ng-container>
@@ -152,13 +151,16 @@
                                     Trip
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
-                                    <div class="flex flex-col">
-                                        <span class="pr-6 whitespace-nowrap">
-                                            {{ (shipment.originId | fuseFindByKey:'id':locations).name}}
-                                        </span>
-                                        <span class="pr-6 whitespace-nowrap">
-                                            {{ (shipment.destinationId | fuseFindByKey:'id':locations).name}}
-                                        </span>
+                                    <div class="flex flex-row items-center">
+                                        <div class="flex flex-col">
+                                            <span class=" whitespace-nowrap">
+                                                {{ (shipment.originId | fuseFindByKey:'id':locations).name}}
+                                            </span>
+                                            <span class="whitespace-nowrap">
+                                                {{ (shipment.destinationId | fuseFindByKey:'id':locations).name}}
+                                            </span>
+                                        </div>
+                                        <mat-icon [svgIcon]="'heroicons_outline:arrow-long-down'"></mat-icon>
                                     </div>
                                 </td>
                             </ng-container>
@@ -225,7 +227,7 @@
                                         <span class="font-medium mr-2 whitespace-nowrap">
                                             <a [routerLinkActive]="'active'"
                                                 [routerLink]="['/shipments/' + shipment.id ]">
-                                                <button [matTooltip]="'Edit User'">
+                                                <button [matTooltip]="'Edit'">
                                                     <mat-icon [svgIcon]="'heroicons_outline:pencil'"
                                                         color="primary"></mat-icon>
                                                 </button>

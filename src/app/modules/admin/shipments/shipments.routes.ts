@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { ShipmentDetailComponent } from './detail/detail.component';
 import { ShipmentListComponent } from './list/list.component';
 import { ShipmentsComponent } from './shipments.component';
-import { myShipmentsResolver } from './shipments.resolver';
+import { myShipmentsResolver, shipmentResolver } from './shipments.resolver';
 
 export default [
     {
@@ -20,15 +20,13 @@ export default [
             {
                 path: 'add',
                 component: ShipmentDetailComponent,
-                // canDeactivate: [canDeactivateDetails],
             },
             {
                 path: ':id',
                 component: ShipmentDetailComponent,
-                // resolve: {
-                //   brand: brandResolver,
-                // },
-                // canDeactivate: [canDeactivateDetails],
+                resolve: {
+                    shipment: shipmentResolver,
+                },
             },
         ],
     },

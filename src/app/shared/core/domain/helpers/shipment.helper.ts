@@ -10,8 +10,8 @@ export class ShipmentHelper {
         return {
             id: shipmentId,
             userId: userId,
-            originId: data.origin.id,
-            destinationId: data.destination.id,
+            originId: data.origin,
+            destinationId: data.destination,
             pickupEarliest: new Date(Utility.formatDate(data.pickupEarliest)),
             pickupLatest: new Date(Utility.formatDate(data.pickupLatest)),
             pickupHours: data.pickupHours,

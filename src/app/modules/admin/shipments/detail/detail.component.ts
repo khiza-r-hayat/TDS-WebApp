@@ -1,6 +1,6 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
 import { AsyncPipe } from '@angular/common';
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -19,6 +19,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UserService } from 'app/core/user/user.service';
@@ -26,18 +27,15 @@ import { User } from 'app/core/user/user.types';
 import { Utility } from 'app/shared/core/classes/utility';
 import {
     EquipmentType,
-    LocalLocation,
     equipmentTypes,
+    LocalLocation,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
 import { ShipmentHelper } from 'app/shared/core/domain/helpers/shipment.helper';
-import {
-    BrandModel,
-    ShipmentModel,
-} from 'app/shared/core/domain/models/brand.model';
+import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
-import { Observable, map, startWith } from 'rxjs';
+import { map, Observable, startWith } from 'rxjs';
 
 @Component({
     selector: 'app-detail',
@@ -74,7 +72,7 @@ export class ShipmentDetailComponent implements OnInit {
     form: UntypedFormGroup;
     userId = null;
 
-    brand = this._brandService.brand;
+    shipment = computed(() => this._shipmentService.shipment());
     locations = pakistan_locations;
 
     // minDate = Date();
@@ -87,7 +85,8 @@ export class ShipmentDetailComponent implements OnInit {
         // private _brandListComponent: BrandListComponent,
         private _brandService: BrandService,
         private _shipmentService: ShipmentService,
-        private _userService: UserService
+        private _userService: UserService,
+        private _snackbar: MatSnackBar,
         // private logger: LogService
     ) {}
 
@@ -139,14 +138,28 @@ export class ShipmentDetailComponent implements OnInit {
             rate: ['', [Validators.required]],
         });
         if (this.editMode) {
-            this.patchForm(this.brand());
+            this.patchForm(this.shipment());
         }
     }
 
-    patchForm(brand: BrandModel) {
+    patchForm(shipment: ShipmentModel) {
         this.form.patchValue({
-            name: brand.name,
-            status: brand.status ? '0' : '1',
+            id: shipment.id,
+            userId: shipment.userId,
+            origin: shipment.originId,
+            destination: shipment.destinationId,
+            pickupEarliest: shipment.pickupEarliest,
+            pickupLatest: shipment.pickupLatest,
+            pickupHours: shipment.pickupHours,
+            dropoffHours: shipment.dropoffHours,
+            equipment: shipment.equipmentId,
+            availableLength: shipment.availableLength,
+            weight: shipment.weight,
+            comments: shipment.comments,
+            commodity: shipment.commodity,
+            refId: shipment.refId,
+            contact: shipment.contact,
+            rate: shipment.rate,
         });
     }
 
@@ -202,10 +215,18 @@ export class ShipmentDetailComponent implements OnInit {
         );
     }
 
-    displayLocation(location: LocalLocation) {
-        return location && location.name
-            ? `${location.name} ,  ${location.country ?? ''}`
-            : '';
+    displayLocation(locationId: string) {
+        if (!locationId) return '';
+        const location = pakistan_locations.find(
+            (location) => location.id === locationId
+        );
+        return `${location.name} ,  ${location.country ?? ''}`;
+    }
+
+    goToProfile(): void {
+        ////console.log(this.user);
+
+        this._router.navigate(['/profile/', this.userId]);
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -214,25 +235,6 @@ export class ShipmentDetailComponent implements OnInit {
 
     save() {
         let formData = this.form.getRawValue();
-
-        // const upload: ShipmentModel = {
-        //     id: this.shipmentId,
-        //     userId: this._userService.user.id,
-        //     originId: formData.origin.id,
-        //     destinationId: formData.destination.id,
-        //     pickupEarliest: formData.pickupEarliest,
-        //     pickupLatest: formData.pickupLatest,
-        //     pickupHours: formData.pickupHours,
-        //     dropoffHours: formData.dropoffHours,
-        //     equipmentId: formData.equipment.id,
-        //     availableLength: formData.availableLength,
-        //     weight: formData.weight,
-        //     comments: formData.comments,
-        //     commodity: formData.commodity,
-        //     refId: formData.refId,
-        //     contact: formData.contact,
-        //     rate: formData.rate,
-        // };
         const upload: ShipmentModel =
             ShipmentHelper.generateShipmentUploadObject(
                 formData,
@@ -240,10 +242,16 @@ export class ShipmentDetailComponent implements OnInit {
                 this.userId
             );
 
-        console.log('form value:', upload);
+        // console.log('form value:', upload);
 
         this._shipmentService
             .upsertShipments([upload])
-            .subscribe((res) => console.log('upload response:', res));
+            .subscribe((res) => {
+                this._snackbar.open('Shipment Saved', 'Close', {
+                    duration: 3000,
+                });
+
+                setTimeout(()=>{this._router.navigate(['../'])},3000);
+            });
     }
 }
