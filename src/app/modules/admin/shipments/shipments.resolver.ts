@@ -102,6 +102,37 @@ export const myShipmentsResolver = (
     );
 };
 
+export const allShipmentsResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const service = inject(ShipmentService);
+    const localStorage = inject(LocalStorageService);
+    const router = inject(Router);
+
+    //TODO: make sure that this function compansates sponsor
+
+    return service.getShipments().pipe(
+        // Error here means the requested account is not available
+        catchError((error) => {
+            // Log the error
+            console.log(
+                'Error fetching shipments with products by user id!',
+                error
+            );
+
+            // Get the parent url
+            const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+            // Navigate to there
+            router.navigateByUrl(parentUrl);
+
+            // Throw an error
+            return throwError(error);
+        })
+    );
+};
+
 export const shipmentResolver = (
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

@@ -82,7 +82,16 @@ const defaultNav: FuseNavigationItem[] = [
         link: '/settings',
     },
 ];
-const superAdminNav: FuseNavigationItem[] = [
+const inactiveUserNav: FuseNavigationItem[] = [
+    {
+        id: 'subscription',
+        title: 'Subscription',
+        type: 'basic',
+        icon: 'heroicons_outline:cog',
+        link: '/subscription',
+    },
+]
+const superAdminNav: FuseNavigationItem[] =[
     {
         id: 'dashboard',
         title: 'Dashboard',
@@ -136,15 +145,16 @@ const superAdminNav: FuseNavigationItem[] = [
                 title: 'Search Shipments',
                 type: 'basic',
                 icon: 'heroicons_outline:cube',
-                link: '/search',
+                link: '/shipments/search',
             },
         ],
     },
-    // {
-    //   id: "accounts",
-    //   title: "User Management",
-    //   type: "collapsable",
-    //   icon: "heroicons_outline:user-group",
+    {
+      id: "accounts",
+      title: "User Management",
+      type: "basic",
+      icon: "heroicons_outline:user-group",
+      link: "/accounts",
     //   children: [
     //     {
     //       id: "accounts.tenant",
@@ -168,7 +178,7 @@ const superAdminNav: FuseNavigationItem[] = [
     //       link: "/accounts",
     //     },
     //   ],
-    // },
+    },
     {
         id: 'report',
         title: 'Reports',
@@ -229,7 +239,7 @@ const loadAdminNav: FuseNavigationItem[] = [
         children: [
             {
                 id: 'shipment.shipments',
-                title: 'Shipments',
+                title: 'My Shipments',
                 type: 'basic',
                 icon: 'heroicons_outline:tag',
                 link: '/shipments',
@@ -239,7 +249,7 @@ const loadAdminNav: FuseNavigationItem[] = [
                 title: 'Search Shipment',
                 type: 'basic',
                 icon: 'heroicons_outline:cube',
-                link: '/search',
+                link: '/shipments/search',
             },
         ],
     },
@@ -332,7 +342,7 @@ const operatorAdminNav: FuseNavigationItem[] = [
         children: [
             {
                 id: 'shipment.shipments',
-                title: 'Shipments',
+                title: 'My Shipments',
                 type: 'basic',
                 icon: 'heroicons_outline:tag',
                 link: '/shipments',
@@ -342,7 +352,7 @@ const operatorAdminNav: FuseNavigationItem[] = [
                 title: 'Search Shipments',
                 type: 'basic',
                 icon: 'heroicons_outline:cube',
-                link: '/search',
+                link: '/shipments/search',
             },
         ],
     },
@@ -512,6 +522,7 @@ export const sponsorNavigation: FuseNavigationItem[] = sponsorNav;
 export const superAdminNavigation: FuseNavigationItem[] = superAdminNav;
 export const loadAdminNavigation: FuseNavigationItem[] = loadAdminNav;
 export const operatorAdminNavigation: FuseNavigationItem[] = operatorAdminNav;
+export const inactiveUserNavigation: FuseNavigationItem[] = inactiveUserNav;
 export const tenenatNavigation: FuseNavigationItem[] = tenantNav;
 // export const futuristicNavigation: FuseNavigationItem[] = defaultNav;
 // export const horizontalNavigation: FuseNavigationItem[] = defaultNav;

@@ -10,6 +10,6 @@ export class RoleNamePipe implements PipeTransform {
   private _accountService = inject(AccountService);
   transform(roleId: number): string {
     const roles = this._accountService.roles();
-    return roles.find((r) => r.id == roleId).name ?? "";
+    return roles.find((r) => r.id == roleId).title ?? "";
   }
 }

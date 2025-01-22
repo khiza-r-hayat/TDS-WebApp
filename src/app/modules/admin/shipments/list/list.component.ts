@@ -87,6 +87,7 @@ export class ShipmentListComponent {
     //<--------------------- Flag Variables ---------------------->
 
     enableActions = signal<boolean>(false);
+    searchRoute = signal<boolean>(false);
     searchText = signal<string>('');
 
     constructor(
@@ -94,8 +95,7 @@ export class ShipmentListComponent {
         private _confirmationDialogs: ConfirmationDialogs,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        private _changeDetectorRef: ChangeDetectorRef
-        // private logger: LogService
+        private _changeDetectorRef: ChangeDetectorRef,
     ) {}
 
     shipments = computed(() => {
@@ -103,7 +103,6 @@ export class ShipmentListComponent {
         if (this.dataSource) {
             this.dataSource.data = data;
         }
-        console.log('shipments', data);
         return data ?? [];
     });
 
@@ -125,6 +124,11 @@ export class ShipmentListComponent {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        this._activatedRoute.data.subscribe((data) => {
+            console.log(data);
+            this.searchRoute.set(data['search']);
+        });
+        
         this.dataSource = new MatTableDataSource(this.shipments());
     }
 

@@ -18,17 +18,17 @@
                         <div class="flex flex-auto items-center min-w-0">
                             <div class="flex flex-col min-w-0 ">
                                 <ng-container *transloco="let t">
-                                    <div class="text-4xl font-extrabold tracking-tight">Users Accounts</div>
+                                    <div class="text-4xl font-extrabold tracking-tight">User Accounts</div>
                                 </ng-container>
                             </div>
                         </div>
-                        <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
+                        <!-- <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
                             <button class="bg-accent" mat-flat-button [routerLink]="['/accounts/add']"
                                 [color]="'accent'">
                                 <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
                                 <span class="ml-2">Add new</span>
                             </button>
-                        </div>
+                        </div> -->
 
                     </div>
 
@@ -62,74 +62,7 @@
 
                                         </div>
                                     </div>
-                                    @if(showSponsorFilter()){
-                                    <div class="flex-auto  ml-1">
-                                        <mat-form-field
-                                            class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-52">
 
-                                            <mat-select (selectionChange)="filterBySponsors($event)" [value]="sponsor()"
-                                                placeholder="Filter by Sponsors">
-                                                <ng-container>
-                                                    @for(opt of sponsors();track opt){
-                                                    <mat-option [value]="opt.id">{{
-                                                        opt.title
-                                                        }}</mat-option>
-                                                    }
-                                                </ng-container>
-                                            </mat-select>
-                                            @if(sponsor()!==""){
-                                            <button mat-icon-button matSuffix (click)="filterBySponsors({value:''})">
-                                                <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
-                                            </button>
-                                            }
-                                        </mat-form-field>
-                                    </div>
-                                    }
-                                    @if(showCompaignFilter()){
-
-                                    <div class="flex-auto  ml-1">
-                                        <mat-form-field
-                                            class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-52">
-
-                                            <mat-select (selectionChange)="filterByCampaigns($event)"
-                                                [value]="campaign()" placeholder="Filter by Campaigns">
-                                                <ng-container>
-                                                    @for(opt of campaigns();track opt){
-                                                    <mat-option [value]="opt">{{
-                                                        opt.title
-                                                        }}</mat-option>
-                                                    }
-                                                </ng-container>
-                                            </mat-select>
-                                            @if(campaign()!==""){
-                                            <button mat-icon-button matSuffix (click)="filterByCampaigns({value:''})">
-                                                <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
-                                            </button>
-                                            }
-                                        </mat-form-field>
-                                    </div>
-                                    }
-                                    @if(showTenantFilter()){
-                                    <div class="flex-auto  ml-1">
-                                        <mat-form-field
-                                            class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-52">
-                                            <mat-select placeholder="Filter by Tenants" [value]="tenant()"
-                                                (selectionChange)="filterByTenant($event)">
-                                                <ng-container>
-                                                    @for (opt of tenants(); track $index) {
-                                                    <mat-option [value]="opt.id">{{opt.title}}</mat-option>
-                                                    }
-                                                </ng-container>
-
-                                            </mat-select>
-                                            @if(tenant()!==""){
-                                            <button mat-icon-button matSuffix (click)="filterByTenant({value:''})">
-                                                <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
-                                            </button>
-                                            }
-                                        </mat-form-field>
-                                    </div>
-                                    }
                                     <div class="flex-auto  ml-1">
                                         <mat-form-field
                                             class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-40">
@@ -139,7 +72,7 @@
                                                 <ng-container>
                                                     @for(opt of roles();track opt){
                                                     <mat-option [value]="opt.id">{{
-                                                        opt.name
+                                                        opt.title
                                                         }}</mat-option>
                                                     }
                                                 </ng-container>
@@ -169,10 +102,10 @@
                                             [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
                                     </button>
                                     <mat-menu class="overflow-hidden max-w-64" #impressionsMenu="matMenu">
-                                        <button (click)="remove()" class="hidden sm:inline-flex " mat-flat-button>
+                                        <button (click)="disable()" class="hidden sm:inline-flex " mat-flat-button>
                                             <mat-icon class="icon-size-5"
-                                                [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                            <span class="ml-2">Delete Selected</span>
+                                                [svgIcon]="'heroicons_solid:no-symbol'"></mat-icon>
+                                            <span class="ml-2">Disable Users</span>
                                         </button>
                                     </mat-menu>
                                     <div class="sm:hidden">
@@ -184,8 +117,8 @@
                                             <!-- <button (click)="exportToExcel()" mat-menu-item>
                                                                                     Export Selected
                                                                                 </button> -->
-                                            <button (click)="remove()" mat-menu-item>
-                                                Delete Selected
+                                            <button (click)="disable()" mat-menu-item>
+                                                Disable Users
                                             </button>
 
                                         </mat-menu>
@@ -213,17 +146,17 @@
                                             </span>
                                         </td>
                                     </ng-container>
-                                    <ng-container matColumnDef="firstName">
+                                    <ng-container matColumnDef="title">
                                         <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                            First Name
+                                            Title
                                         </th>
                                         <td class="px-2" mat-cell *matCellDef="let account">
                                             <span class="pr-6 whitespace-nowrap">
-                                                {{account.firstName}}
+                                                {{account.title}}
                                             </span>
                                         </td>
                                     </ng-container>
-                                    <ng-container matColumnDef="lastName">
+                                    <!-- <ng-container matColumnDef="lastName">
                                         <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                             Last Name
                                         </th>
@@ -232,7 +165,7 @@
                                                 {{account.lastName}}
                                             </span>
                                         </td>
-                                    </ng-container>
+                                    </ng-container> -->
                                     <ng-container matColumnDef="email">
                                         <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                             Email
@@ -249,22 +182,21 @@
                                         </th>
                                         <td class="px-2" mat-cell *matCellDef="let account">
                                             <span class="pr-6 whitespace-nowrap">
-                                                {{account.roleId | rolenamepipe }}
+                                                {{(account.roleId | fuseFindByKey:'id':roles()).title }}
                                             </span>
                                         </td>
                                     </ng-container>
-                                    <ng-container matColumnDef="events">
+                                    <ng-container matColumnDef="status">
                                         <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                            # of Events
+                                            Status
                                         </th>
                                         <td class="px-2" mat-cell *matCellDef="let account">
-                                            <button mat-button color="primary" class="pr-6  whitespace-nowrap"
-                                                (click)="viewEvents(account.id)">
-                                                <strong>{{account.events}}</strong>
-                                            </button>
+                                            <span class="pr-6 whitespace-nowrap">
+                                                {{account.active?'Active':'InActive' }}
+                                            </span>
                                         </td>
                                     </ng-container>
-                                    <ng-container matColumnDef="campaigns">
+                                    <!-- <ng-container matColumnDef="campaigns">
                                         <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                             # of Campaigns
                                         </th>
@@ -284,7 +216,7 @@
                                                 {{account | companynamepipe}}
                                             </span>
                                         </td>
-                                    </ng-container>
+                                    </ng-container> -->
 
 
                                     <ng-container matColumnDef="createdAt">
@@ -337,7 +269,7 @@
                                         </th>
                                         <td class="pr-2" mat-cell *matCellDef="let account">
                                             <div class="flex mt-2">
-                                                <span class="font-medium mr-2 whitespace-nowrap">
+                                                <!-- <span class="font-medium mr-2 whitespace-nowrap">
                                                     <a [routerLinkActive]="'active'"
                                                         [routerLink]="['/accounts/' + account.id ]">
                                                         <button [matTooltip]="'Edit User'">
@@ -345,7 +277,7 @@
                                                                 color="primary"></mat-icon>
                                                         </button>
                                                     </a>
-                                                </span>
+                                                </span> -->
                                                 <!-- [disabled]="checkLoginAction(account)" -->
                                                 <!-- @if(isUserAdmin()){
                                                 <span class="font-bold mx-1 whitespace-nowrap">
@@ -358,9 +290,10 @@
                                                 } -->
                                                 <!-- [disabled]="checkDeleteAction(account)" -->
                                                 <span class="font-medium ml-1 whitespace-nowrap">
-                                                    <button (click)="remove(account)" [matTooltip]="'Remove User'">
+                                                    <button (click)="disable(account)" [matTooltip]="'Disable User'">
                                                         <mat-icon class="icon-size-7"
-                                                            [svgIcon]="'heroicons_solid:trash'" color="warn"></mat-icon>
+                                                            [svgIcon]="'heroicons_solid:no-symbol'"
+                                                            color="warn"></mat-icon>
                                                     </button>
                                                 </span>
                                             </div>

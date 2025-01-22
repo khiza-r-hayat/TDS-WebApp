@@ -22,4 +22,19 @@ export class ConfirmationDialogs {
     });
     return confirmation;
   }
+  
+  confirmDisable(entityName: string, multiple: boolean) {
+    const confirmation = this._fuseConfirmationService.open({
+      title: `Disable ${entityName}`,
+      message: `Are you sure you want to disable ${
+        multiple ? `selected ${entityName}s` : `this ${entityName}`
+      }?`,
+      actions: {
+        confirm: {
+          label: CONSTANTS.DELETE,
+        },
+      },
+    });
+    return confirmation;
+  }
 }

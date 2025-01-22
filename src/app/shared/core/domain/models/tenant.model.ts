@@ -91,7 +91,14 @@ export interface Subscriptions {
 
 export interface Plan {
   id: number;
-  name: string;
+  name?: string;
+  title?: string;
+}
+
+export interface SubscriptionType {
+  id: number;
+  title: string;
+  days: number;
 }
 
 export interface TenantConfig {

@@ -77,31 +77,8 @@ export const accountsResolver = (
     // const logger = inject(LogService);
     const router = inject(Router);
 
-    // const session = sessionService.userSession();
-
-    // let apiCall: Observable<AccountModel[]>;
-
-    // switch (session.user.roleId) {
-    //     case UserRole.SUPER_ADMINISTRATOR:
-    //         {
-    //             apiCall = accountService.getAccountsByRoles([
-    //                 UserRole.SUPER_ADMINISTRATOR,
-    //                 UserRole.EVENT_ORGANIZER,
-    //             ]);
-    //         }
-    //         break;
-    //     case UserRole.EVENT_ORGANIZER:
-    //       {
-    //         apiCall = accountService.getAccountsByTenantId(session.tenantId);
-    //       }
-    //       break;
-    //     default: {
-    //       apiCall = accountService.getAccountsBySponsorId(session.organizationId);
-    //     }
-    // }
-
     return accountService
-        .getAccounts()
+        .getAccountsByRoles([UserRole.OPERATOR_ADMIN,UserRole.SHIPMENT_ADMIN])
         .pipe(
             // Error here means the requested account is not available
             catchError((error) => {

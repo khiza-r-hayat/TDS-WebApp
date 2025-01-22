@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword } from '@angular/fire/auth';
+import {
+    createUserWithEmailAndPassword,
+    getAuth,
+    signInWithEmailAndPassword,
+} from '@angular/fire/auth';
 import { FuseMockApiService } from '@fuse/lib/mock-api';
 import { user as userData } from 'app/mock-api/common/user/data';
 import { UserModel } from 'app/shared/core/domain/models/account.model';
@@ -15,6 +19,7 @@ import { Observable } from 'rxjs';
 export class AuthMockApi {
     private readonly _secret: any;
     private _user: any = userData;
+    private firebaseAuth = getAuth();
 
     /**
      * Constructor
@@ -22,8 +27,7 @@ export class AuthMockApi {
     constructor(
         private _fuseMockApiService: FuseMockApiService,
         private _accountService: AccountService,
-        private _localStorage: LocalStorageService,
-        private firebaseAuth: Auth
+        private _localStorage: LocalStorageService
     ) {
         // Set the mock-api
         this._secret =
@@ -79,32 +83,26 @@ export class AuthMockApi {
 
                                 this._accountService
                                     .getAccountByEmail(email.toLowerCase())
-                                    .subscribe(
-                                        (user: UserModel[]) => {
-                                            if (user.length) {
-                                                observer.next([
-                                                    200,
-                                                    {
-                                                        firebaseUser:
-                                                            cloneDeep(
-                                                                firebaseUser
-                                                            ),
-                                                        user: cloneDeep(
-                                                            user[0]
-                                                        ),
-                                                        accessToken: idToken,
-                                                        tokenType: 'bearer',
-                                                    },
-                                                ]);
-                                                observer.complete();
+                                    .subscribe((user: UserModel[]) => {
+                                        if (user.length) {
+                                            observer.next([
+                                                200,
+                                                {
+                                                    firebaseUser:
+                                                        cloneDeep(firebaseUser),
+                                                    user: cloneDeep(user[0]),
+                                                    accessToken: idToken,
+                                                    tokenType: 'bearer',
+                                                },
+                                            ]);
+                                            observer.complete();
 
-                                                //  })
-                                            } else {
-                                                observer.next([404, false]);
-                                                observer.complete();
-                                            }
+                                            //  })
+                                        } else {
+                                            observer.next([404, false]);
+                                            observer.complete();
                                         }
-                                    );
+                                    });
                             }
                         } catch (error) {
                             // Invalid credentials or other error occurred
@@ -148,16 +146,72 @@ export class AuthMockApi {
         // -----------------------------------------------------------------------------------------------------
         // @ Sign up - POST
         // -----------------------------------------------------------------------------------------------------
-        this._fuseMockApiService.onPost('api/auth/sign-up', 1500).reply(() =>
-            // Simply return true
-            [200, true]
-        );
+        this._fuseMockApiService
+            .onPost('api/auth/sign-up')
+            .reply(({ request }): [number, any] | Observable<any> => {
+                return new Observable((observer) => {
+                    // Immediately execute the async function
+                    (async () => {
+                        try {
+                            const { name, email, password, phone } =
+                                request.body;
 
+                            const response =
+                                await createUserWithEmailAndPassword(
+                                    this.firebaseAuth,
+                                    email,
+                                    password
+                                );
+
+                            const firebaseUser = response.user;
+
+                            // Sign in successful
+                            if (firebaseUser) {
+                                const idToken = await firebaseUser.getIdToken();
+
+                                this._accountService
+                                    .registerNewUser(name, email, phone)
+                                    .subscribe({
+                                        next: (user: UserModel[]) => {
+                                            if (user.length) {
+                                                observer.next([
+                                                    200,
+                                                    {
+                                                        firebaseUser:
+                                                            cloneDeep(
+                                                                firebaseUser
+                                                            ),
+                                                        user: cloneDeep(
+                                                            user[0]
+                                                        ),
+                                                        accessToken: idToken,
+                                                        tokenType: 'bearer',
+                                                    },
+                                                ]);
+                                                observer.complete();
+                                            } else {
+                                                observer.next([404, false]);
+                                                observer.complete();
+                                            }
+                                        },
+                                        error: (error) => {
+                                            observer.next([404, false]);
+                                            observer.complete();
+                                        },
+                                    });
+                            }
+                        } catch (e) {
+                            observer.next([404, false]);
+                            observer.complete();
+                        }
+                    })(); // Immediately invoke the async function
+                });
+            });
         // -----------------------------------------------------------------------------------------------------
         // @ Unlock session - POST
         // -----------------------------------------------------------------------------------------------------
         this._fuseMockApiService
-            .onPost('api/auth/unlock-session', 1500)
+            .onPost('api/auth/unlock-session', 100)
             .reply(({ request }) => {
                 // Sign in successful
                 if (

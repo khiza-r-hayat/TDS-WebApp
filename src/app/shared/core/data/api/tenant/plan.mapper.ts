@@ -6,6 +6,7 @@ export class PlanMapper extends Mapper<Plan, Plan> {
     return {
       id: param.id,
       name: param.name,
+      title:param.title,
     };
   }
 
@@ -13,6 +14,7 @@ export class PlanMapper extends Mapper<Plan, Plan> {
     return {
       id: param.id,
       name: param.name,
+      title:param.title,
     };
   }
 }

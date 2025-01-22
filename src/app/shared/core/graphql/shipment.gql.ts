@@ -1,6 +1,15 @@
 import gql from 'graphql-tag';
 import { ShipmentQL } from '../fragments/shipment.fragment';
 
+export const GetShipmentsQL = gql`
+    query GetShipmentByUserIdQL {
+        shipments {
+            ...ShipmentQL
+        }
+    }
+    ${ShipmentQL}
+`;
+
 export const GetShipmentByUserIdQL = gql`
     query GetShipmentByUserIdQL($id: uuid!) {
         shipments(where: { userId: { _eq: $id } }) {

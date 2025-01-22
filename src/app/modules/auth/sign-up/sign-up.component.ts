@@ -17,6 +17,7 @@ import { Router, RouterLink } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertComponent, FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { catchError } from 'rxjs/internal/operators/catchError';
 
 @Component({
     selector: 'auth-sign-up',
@@ -69,8 +70,8 @@ export class AuthSignUpComponent implements OnInit {
             name: ['', Validators.required],
             email: ['', [Validators.required, Validators.email]],
             password: ['', Validators.required],
-            company: [''],
-            agreements: ['', Validators.requiredTrue],
+            // phone: ['',Validators.required],
+            // agreements: ['', Validators.requiredTrue],
         });
     }
 
@@ -94,27 +95,30 @@ export class AuthSignUpComponent implements OnInit {
         this.showAlert = false;
 
         // Sign up
-        this._authService.signUp(this.signUpForm.value).subscribe(
-            (response) => {
+        this._authService
+            .signUp(this.signUpForm.value)
+            .pipe(
+                catchError((error) => {
+                    // Re-enable the form
+                    this.signUpForm.enable();
+
+                    // Reset the form
+                    this.signUpNgForm.resetForm();
+
+                    // Set the alert
+                    this.alert = {
+                        type: 'error',
+                        message: 'Something went wrong, please try again.',
+                    };
+
+                    // Show the alert
+                    this.showAlert = true;
+                    return error;
+                })
+            )
+            .subscribe((response) => {
                 // Navigate to the confirmation required page
                 this._router.navigateByUrl('/confirmation-required');
-            },
-            (response) => {
-                // Re-enable the form
-                this.signUpForm.enable();
-
-                // Reset the form
-                this.signUpNgForm.resetForm();
-
-                // Set the alert
-                this.alert = {
-                    type: 'error',
-                    message: 'Something went wrong, please try again.',
-                };
-
-                // Show the alert
-                this.showAlert = true;
-            }
-        );
+            });
     }
 }

@@ -13,10 +13,17 @@ const roleAcess = [
             UserRole.SHIPMENT_ADMIN,
             UserRole.OPERATOR_ADMIN,
         ],
+        active: true,
     },
     {
         route: 'accounts',
         roles: [UserRole.SUPER_ADMINISTRATOR],
+        active: true,
+    },
+    {
+        route: 'shipments',
+        roles: [UserRole.SUPER_ADMINISTRATOR, UserRole.SHIPMENT_ADMIN],
+        active: true,
     },
     {
         route: 'reports',
@@ -25,6 +32,7 @@ const roleAcess = [
             UserRole.SHIPMENT_ADMIN,
             UserRole.OPERATOR_ADMIN,
         ],
+        active: true,
     },
     {
         route: 'settings',
@@ -33,12 +41,35 @@ const roleAcess = [
             UserRole.SHIPMENT_ADMIN,
             UserRole.OPERATOR_ADMIN,
         ],
+        active: true,
+    },
+    {
+        route: 'example',
+        roles: [],
+        active: true,
+    },
+    {
+        route: 'subscription',
+        roles: [UserRole.InActive],
+        active: true,
+    },
+    {
+        route: 'profile',
+        roles: [],
+        active: true,
     },
     {
         route: 'redirect',
         roles: [],
+        active: true,
     },
 ];
+
+const userInitialRoutes = {
+    [UserRole.SUPER_ADMINISTRATOR]: 'shipments',
+    [UserRole.SHIPMENT_ADMIN]: 'shipments',
+    [UserRole.InActive]: 'subscription',
+};
 
 export const RouteGuard: CanActivateFn | CanActivateChildFn = (
     route,
@@ -55,15 +86,27 @@ export const RouteGuard: CanActivateFn | CanActivateChildFn = (
     }
 
     const roleId = user.roleId;
+    const path = route.routeConfig.path;
+
+    if (path === '' || path === 'signed-in-redirect') {
+        router.navigate([userInitialRoutes[roleId]]);
+        return true;
+    }
 
     const routeAccess = roleAcess.find(
-        (a) => a.route === route.routeConfig.path
+        (a) => a.route === path
     );
 
     if (!routeAccess) {
-        router.navigate(['/example']);
+        router.navigate(['/redirect/notfound']);
         return true;
     }
+
+    if (routeAccess.active === false) {
+        router.navigate(['/redirect/maintainance']);
+        return true;
+    }
+
     const hasAccess = routeAccess
         ? routeAccess.roles.length === 0
             ? true
@@ -76,3 +119,4 @@ export const RouteGuard: CanActivateFn | CanActivateChildFn = (
 
     return hasAccess;
 };
+

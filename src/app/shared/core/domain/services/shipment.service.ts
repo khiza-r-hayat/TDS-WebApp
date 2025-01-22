@@ -51,6 +51,21 @@ export class ShipmentService {
             })
         );
     }
+    
+    getShipments(): Observable<ShipmentModel[]> {
+        return this.api.getShipments().pipe(
+            catchError((e) => {
+                console.log('Error fetching shipments!', e);
+                this.messageService.errorMessage(
+                    'Failed to fetch shipments!'
+                );
+                return of(null);
+            }),
+            tap((response: any) => {
+                this._shipments.set(response);
+            })
+        );
+    }
 
     getShipmentById(id: string): Observable<ShipmentModel[]> {
         return this.api.getShipmentById(id).pipe(

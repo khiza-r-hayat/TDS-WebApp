@@ -17,7 +17,9 @@ import { User } from 'app/core/user/user.types';
 import { LanguagesComponent } from 'app/layout/common/languages/languages.component';
 import { UserComponent } from 'app/layout/common/user/user.component';
 import { UserRole } from 'app/shared/core/classes/roles';
+import { LocalStorageService } from 'app/shared/core/domain/services/local_storage.service';
 import { UserSessionService } from 'app/shared/core/domain/services/session.service';
+import { environment } from 'environments/environment';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
@@ -30,7 +32,6 @@ import { Subject, takeUntil } from 'rxjs';
         FuseVerticalNavigationComponent,
         MatIconModule,
         MatButtonModule,
-        LanguagesComponent,
         FuseFullscreenComponent,
         RouterOutlet,
         UserComponent,
@@ -51,7 +52,8 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
         private _userService: UserService,
         private _fuseMediaWatcherService: FuseMediaWatcherService,
         private _fuseNavigationService: FuseNavigationService,
-        private _sessionService: UserSessionService
+        private _sessionService: UserSessionService,
+        private _localStorageService: LocalStorageService,
     ) {}
 
     // -----------------------------------------------------------------------------------------------------
@@ -77,9 +79,9 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
         this._navigationService.navigation$
             .pipe(takeUntil(this._unsubscribeAll))
             .subscribe((navigation: Navigation) => {
-                console.log(this._sessionService.userSession());
-                // const role = this._sessionService.userSession().user.role.id;
-                const role: number = 0;
+                // console.log(this._sessionService.userSession());
+                const role = this._localStorageService.get(environment.sessionKey).user.roleId;
+                // const role: number = 0;
                 switch (role) {
                     case UserRole.SUPER_ADMINISTRATOR:
                         {
@@ -97,7 +99,7 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
                         }
                         break;
                     default: {
-                        this.selectedNavigation = navigation.loadAdmin;
+                        this.selectedNavigation = navigation.inActive;
                     }
                 }
             });

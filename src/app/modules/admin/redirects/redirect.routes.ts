@@ -20,6 +20,13 @@ export default [
                     redirectType: 404,
                 },
             },
+            {
+                path: 'maintainance',
+                component: RedirectComponent,
+                data: {
+                    redirectType: 503,
+                },
+            },
         ],
     },
 ] as Routes;

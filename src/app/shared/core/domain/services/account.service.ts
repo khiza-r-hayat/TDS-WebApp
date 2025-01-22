@@ -4,9 +4,10 @@ import { FilterUtils } from '../../classes/filter_utils';
 import { MessageService } from '../../classes/message.service';
 import { AccountMapper } from '../../data/api/account/account.mapper';
 import { RoleMapper } from '../../data/api/account/role.mapper';
-import { AccountModel, Roles, UserModel } from '../models/account.model';
+import { Role, UserModel } from '../models/account.model';
 import { AccountRepository } from '../repository/account.repository';
 import { UserSessionService } from './session.service';
+import { Utility } from '../../classes/utility';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -15,7 +16,7 @@ export class AccountService {
     // private _loggedInAccount = signal<UserModel | null>(null);
     private _accounts = signal<UserModel[]>([]);
     private _sponsorStaff = signal<UserModel[]>([]);
-    private _roles = signal<Roles[]>([]);
+    private _roles = signal<Role[]>([]);
 
     private api = inject(AccountRepository);
     // private logger = inject(LogService);
@@ -91,7 +92,7 @@ export class AccountService {
         );
     }
 
-    getAccountsByRoles(roles: number[]): Observable<AccountModel[]> {
+    getAccountsByRoles(roles: number[]): Observable<UserModel[]> {
         return this.api.getAccountsByRoles(roles).pipe(
             catchError((e) => {
                 console.log('Error fetching users', e);
@@ -102,10 +103,10 @@ export class AccountService {
                 if (response) {
                     console.log('Fetched users successfuly');
                     // const userId = this._loggedInAccount().id;
-                    const userId = this.sessionService.userSession().user.id;
+                    // const userId = this.sessionService.userSession().user.id;
 
                     const users = response.data['user']
-                        .filter((a) => a.id !== userId)
+                        // .filter((a) => a.id !== userId)
                         .map((e) => this.accountMapper.mapFrom(e));
 
                     const roles = response.data['role'].map((e) =>
@@ -138,6 +139,25 @@ export class AccountService {
 
     getAccountByEmail(email: string): Observable<UserModel[]> {
         return this.api.getAccountByEmail(email).pipe(
+            catchError((e) => {
+                console.log('Error fetching user by email', e, email);
+                this.messageService.errorMessage(`Failed to fetch user!`);
+                return of(null);
+            })
+        );
+    }
+
+    registerNewUser(title: string, email: string,phone:string): Observable<UserModel[]> {
+        const user: UserModel = {
+            id: Utility.generateUUID(),
+            title: title,
+            email: email,
+            phone: phone,
+            active: false,
+            roleId: 0,
+            isSuperAdmin: false,
+        };
+        return this.api.addAccounts([user]).pipe(
             catchError((e) => {
                 console.log('Error fetching user by email', e, email);
                 this.messageService.errorMessage(`Failed to fetch user!`);

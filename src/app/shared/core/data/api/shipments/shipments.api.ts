@@ -15,6 +15,19 @@ export class ShipmentAPI implements ShipmentRepository {
     private apollo = inject(Apollo);
     mapper = new ShipmentMapper();
 
+    getShipments(): Observable<ShipmentModel[]> {
+        return this.apollo
+            .subscribe<ShipmentModel>({
+                query: Query.GetShipmentsQL,
+            })
+            .pipe(
+                map((result) => result.data['shipments']),
+                map((events) =>
+                    events.map((event) => this.mapper.mapFrom(event))
+                )
+            );
+    }
+
     getShipmentsByUserId(id: string): Observable<ShipmentModel[]> {
         return this.apollo
             .subscribe<ShipmentModel>({

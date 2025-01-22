@@ -100,14 +100,17 @@
                 </mat-form-field>
 
                 <!-- Company field -->
-                <mat-form-field class="w-full">
-                    <mat-label>Company</mat-label>
+                <!-- <mat-form-field class="w-full">
+                    <mat-label>Phone</mat-label>
                     <input
-                        id="company-confirm"
+                        id="phone-confirm"
                         matInput
-                        [formControlName]="'company'"
+                        [formControlName]="'phone'"
                     />
-                </mat-form-field>
+                    @if (signUpForm.get('phone').hasError('required')) {
+                        <mat-error> Phone Number is required </mat-error>
+                    }
+                </mat-form-field> -->
 
                 <!-- ToS and PP -->
                 <!-- <div class="mt-1.5 inline-flex w-full items-end">

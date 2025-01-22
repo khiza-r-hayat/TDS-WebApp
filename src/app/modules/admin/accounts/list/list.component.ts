@@ -8,11 +8,10 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MatButton, MatButtonModule } from "@angular/material/button";
-import { MatFormField, MatFormFieldModule } from "@angular/material/form-field";
-import { MatIcon, MatIconModule } from "@angular/material/icon";
-import { MatInput, MatInputModule } from "@angular/material/input";
+import { MatButton } from "@angular/material/button";
+import { MatFormField } from "@angular/material/form-field";
+import { MatIcon } from "@angular/material/icon";
+import { MatInput } from "@angular/material/input";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatDrawer, MatSidenavModule } from "@angular/material/sidenav";
 import { MatTableDataSource, MatTableModule } from "@angular/material/table";
@@ -22,30 +21,20 @@ import { MatSort, MatSortModule } from "@angular/material/sort";
 import {
   ActivatedRoute,
   Router,
-  RouterLink,
   RouterOutlet,
 } from "@angular/router";
 import { AccountService } from "app/shared/core/domain/services/account.service";
 import { MatOption, MatSelect } from "@angular/material/select";
-import { LogService } from "app/shared/logs/log.service";
 import { MatCheckbox } from "@angular/material/checkbox";
 import {
-  AccountModel,
-  Roles,
   UserModel,
 } from "app/shared/core/domain/models/account.model";
 import { CONSTANTS } from "app/shared/core/classes/utility";
 import { ConfirmationDialogs } from "app/shared/core/classes/confirmation_dialogs";
 import { TranslocoModule } from "@ngneat/transloco";
-import { CompanyNamePipe } from "../pipes/companypipe.pipe";
-import { RoleNamePipe } from "../pipes/rolename.pipe";
 import { UserRole } from "app/shared/core/classes/roles";
-import { SponsorService } from "app/shared/core/domain/services/sponsor.service";
-import { TenantService } from "app/shared/core/domain/services/tenant.service";
-import { Sponsor } from "app/shared/core/domain/models/sponsor.model";
-import { Tenant } from "app/shared/core/domain/models/tenant.model";
-import { AccountHelper } from "app/shared/core/domain/helpers/account.helper";
-import { UserSessionService } from "app/shared/core/domain/services/session.service";
+import { FuseFindByKeyPipe } from "@fuse/pipes/find-by-key";
+import { MatTooltip } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-list",
@@ -68,11 +57,10 @@ import { UserSessionService } from "app/shared/core/domain/services/session.serv
     MatPaginator,
     MatTableModule,
     MatSortModule,
-    RouterLink,
     DatePipe,
     TranslocoModule,
-    CompanyNamePipe,
-    RoleNamePipe,
+    FuseFindByKeyPipe,
+    MatTooltip
   ],
 })
 export class AccountListComponent {
@@ -85,11 +73,6 @@ export class AccountListComponent {
   selection = new SelectionModel<any>(true, []);
 
   //<---------------------- Data Variables --------------------------->
-
-  roles = signal<Roles[]>([]);
-  sponsors = signal<Sponsor[]>([]);
-  tenants = signal<Tenant[]>([]);
-  campaigns = signal<Sponsor[]>([]);
 
   //<---------------------- Filter Variables --------------------------->
 
@@ -113,13 +96,12 @@ export class AccountListComponent {
   tableColumns: string[] = [
     "Select",
     "action",
-    "firstName",
-    "lastName",
+    "title",
     "email",
     "userRole",
-    "events",
-    "campaigns",
-    "company",
+    "status",
+    // "campaigns",
+    // "company",
     "createdAt",
   ];
 
@@ -137,11 +119,7 @@ export class AccountListComponent {
     private _changeDetectorRef: ChangeDetectorRef,
     private _router: Router,
     private _accountService: AccountService,
-    private _sessionService: UserSessionService,
-    private _sponsorService: SponsorService,
-    private _tenantService: TenantService,
     private _confirmationDialogs: ConfirmationDialogs,
-    private logger: LogService
   ) {}
 
   accounts = computed(() => {
@@ -157,6 +135,8 @@ export class AccountListComponent {
     return data;
   });
 
+  roles = computed(()=>this._accountService.roles().filter(r=>r.id!==UserRole.SUPER_ADMINISTRATOR));
+
   // -----------------------------------------------------------------------------------------------------
   // @ Signal Methods
   // -----------------------------------------------------------------------------------------------------
@@ -170,6 +150,7 @@ export class AccountListComponent {
   // -----------------------------------------------------------------------------------------------------
 
   ngOnInit(): void {
+    console.log("ngOnInit: ",this.roles());
     this.dataSource = new MatTableDataSource(this.accounts());
    }
 
@@ -240,10 +221,10 @@ export class AccountListComponent {
   // @ Delete Methods
   // -----------------------------------------------------------------------------------------------------
 
-  remove(account?: UserModel) {
+  disable(account?: UserModel) {
     const multi: boolean = account === null || account === undefined;
     this._confirmationDialogs
-      .confirmDelete("User", multi)
+      .confirmDisable("User", multi)
       .afterClosed()
       .subscribe((result) => {
         if (result === CONSTANTS.CONFIRMED) {

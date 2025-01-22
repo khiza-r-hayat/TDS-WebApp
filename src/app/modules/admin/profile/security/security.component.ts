@@ -53,11 +53,12 @@ export class SettingsSecurityComponent implements OnInit {
             newPassword: ['']
         });
     }
+
     async changePassword() {
         try {
 
             const user = await this.afAuth.currentUser;
-            const _formValue = this.securityForm.getRawValue();
+            // const _formValue = this.securityForm.getRawValue();
             //this.logger.info("User click on update password button", _formValue);
 
             //this.logger.info("Checking user firebase session", user);

@@ -5,6 +5,9 @@ import { FuseMockApiService } from "@fuse/lib/mock-api";
 import {
   compactNavigation,
   defaultNavigation,
+  inactiveUserNavigation,
+  loadAdminNavigation,
+  operatorAdminNavigation,
   // defaultNavigation,
   // futuristicNavigation,
   // horizontalNavigation,
@@ -26,8 +29,9 @@ export class NavigationMockApi {
   // private readonly _horizontalNavigation: FuseNavigationItem[] = horizontalNavigation;
   private readonly _sponsorNavigation: FuseNavigationItem[] = sponsorNavigation;
   private readonly _superAdminNavigation: FuseNavigationItem[] = superAdminNavigation;
-  private readonly _loadAdminNavigation: FuseNavigationItem[] = superAdminNavigation;
-  private readonly _operatorAdminNavigation: FuseNavigationItem[] = superAdminNavigation;
+  private readonly _loadAdminNavigation: FuseNavigationItem[] = loadAdminNavigation;
+  private readonly _operatorAdminNavigation: FuseNavigationItem[] = operatorAdminNavigation;
+  private readonly _inactiveUserNavigation: FuseNavigationItem[] = inactiveUserNavigation;
 
   /**
    * Constructor
@@ -85,8 +89,9 @@ export class NavigationMockApi {
           compact: cloneDeep(this._compactNavigation),
           tenant: cloneDeep(this._tenantNavigation),
           superAdmin: cloneDeep(this._superAdminNavigation),
-          loadAdmin: cloneDeep(this._superAdminNavigation),
-          operatorAdmin: cloneDeep(this._superAdminNavigation),
+          loadAdmin: cloneDeep(this._loadAdminNavigation),
+          inActive: cloneDeep(this._inactiveUserNavigation),
+          operatorAdmin: cloneDeep(this._operatorAdminNavigation),
           staff: cloneDeep(this._staffNavigation),
           sponsor: cloneDeep(this._sponsorNavigation),
           default: cloneDeep(this._defaultNavigation),

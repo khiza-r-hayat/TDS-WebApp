@@ -41,6 +41,8 @@ import { SessionRepository } from './shared/core/domain/repository/session.repos
 import { ShipmentRepository } from './shared/core/domain/repository/shipment.repository';
 import { SponsorRepository } from './shared/core/domain/repository/sponsor.repository';
 import { TenantRepository } from './shared/core/domain/repository/tenant.repository';
+import { SubscriptionsRepository } from './shared/core/domain/repository/subscription.repository';
+import { SubscriptionsAPI } from './shared/core/data/api/subscriptions/subscriptions.api';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -191,6 +193,10 @@ export const appConfig: ApplicationConfig = {
         {
             provide: ShipmentRepository,
             useClass: ShipmentAPI,
+        },
+        {
+            provide: SubscriptionsRepository,
+            useClass: SubscriptionsAPI,
         },
     ],
 };

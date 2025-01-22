@@ -77,16 +77,15 @@ export class AuthService {
                     email: user.email,
                     roleId: user.roleId,
                 };
-                
-                
+
                 const session: LocalSession = {
                     user: newUser,
                     token: response.accessToken,
                     tokenType: response.tokenType,
                 };
-                
+
                 this.sessionObject = session;
-                
+
                 // Store the user on the user service
                 this._userService.user = newUser;
 
@@ -174,9 +173,38 @@ export class AuthService {
         name: string;
         email: string;
         password: string;
-        company: string;
+        phone: string;
     }): Observable<any> {
-        return this._httpClient.post('api/auth/sign-up', user);
+        return this._httpClient.post('api/auth/sign-up', user).pipe(
+            switchMap((response: any) => {
+                // Store the access token in the local storage
+                const user = response.user as UserModel;
+                const newUser: User = {
+                    id: user.id,
+                    avatar: user.photo,
+                    name: user.title,
+                    email: user.email,
+                    roleId: user.roleId,
+                };
+
+                const session: LocalSession = {
+                    user: newUser,
+                    token: response.accessToken,
+                    tokenType: response.tokenType,
+                };
+
+                this.sessionObject = session;
+
+                // Store the user on the user service
+                this._userService.user = newUser;
+
+                // Set the authenticated flag to true
+                this._authenticated = true;
+
+                // Return a new observable with the response
+                return of(response);
+            })
+        );
     }
 
     /**

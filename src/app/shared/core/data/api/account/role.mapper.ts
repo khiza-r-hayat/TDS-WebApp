@@ -1,18 +1,18 @@
 import { Mapper } from "../../../base/mapper";
-import { Roles } from "app/shared/core/domain/models/account.model";
+import { Role, Roles } from "app/shared/core/domain/models/account.model";
 
-export class RoleMapper extends Mapper<Roles, Roles> {
-  mapFrom(param: Roles): any {
+export class RoleMapper extends Mapper<Role, Role> {
+  mapFrom(param: Role): Role {
     return {
       id: param.id,
-      name: param.name,
+      title: param.title,
     };
   }
 
-  mapTo(param: Roles): Roles {
+  mapTo(param: Role): Role {
     return {
       id: param.id,
-      name: param.name,
+      title: param.title,
     };
   }
 }
