@@ -37,3 +37,35 @@ export const subscriptionTypesAndPlansResolver = (
         })
     );
 };
+
+export const userApprovalRequestResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const service = inject(SubscriptionService);
+    const localStorage = inject(LocalStorageService);
+    const router = inject(Router);
+    const user = localStorage.get(environment.sessionKey).user;
+
+    //TODO: make sure that this function compansates sponsor
+
+    return service.getUserApprovalRequest(user.id).pipe(
+        // Error here means the requested account is not available
+        catchError((error) => {
+            // Log the error
+            console.log(
+                'Error fetching Subscription Types And Plans!',
+                error
+            );
+
+            // Get the parent url
+            const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+            // Navigate to there
+            router.navigateByUrl(parentUrl);
+
+            // Throw an error
+            return throwError(error);
+        })
+    );
+};

@@ -152,32 +152,24 @@ const superAdminNav: FuseNavigationItem[] =[
     {
       id: "accounts",
       title: "User Management",
-      type: "basic",
+      type: "collapsable",
       icon: "heroicons_outline:user-group",
-      link: "/accounts",
-    //   children: [
-    //     {
-    //       id: "accounts.tenant",
-    //       title: "Tenants",
-    //       type: "basic",
-    //       icon: "heroicons_outline:building-office",
-    //       link: "/tenants",
-    //     },
-    //     {
-    //       id: "accounts.sponsor",
-    //       title: "Sponsor Companies",
-    //       type: "basic",
-    //       icon: "heroicons_outline:building-office-2",
-    //       link: "/sponsors",
-    //     },
-    //     {
-    //       id: "accounts.account",
-    //       title: "Users",
-    //       type: "basic",
-    //       icon: "heroicons_outline:users",
-    //       link: "/accounts",
-    //     },
-    //   ],
+      children: [
+        {
+          id: "accounts.approvals",
+          title: "Approval Requests",
+          type: "basic",
+          icon: "heroicons_outline:check-badge",
+          link: "/approvals",
+        },
+        {
+          id: "accounts.account",
+          title: "Users",
+          type: "basic",
+          icon: "heroicons_outline:users",
+          link: "/accounts",
+        },
+      ],
     },
     {
         id: 'report',

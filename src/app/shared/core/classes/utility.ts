@@ -483,6 +483,8 @@ export class CONSTANTS {
   static readonly CONFIRMED = "confirmed";
   static readonly CANCELLED = "cancelled";
   static readonly DELETE = "Delete";
+  static readonly DISABLE = "Disable";
+  static readonly APPROVE = "Approve";
 
   static readonly TENANT_ADMIN = "Event Admin";
   static readonly SUPER_ADMIN = "Super Admin";

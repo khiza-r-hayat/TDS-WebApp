@@ -7,6 +7,17 @@ export interface BrandModel {
     products: ProductModel[];
 }
 
+export interface UserApprovalModel {
+    id: string;
+    userId: string;
+    orgName: string;
+    roleId: number;
+    approved: boolean;
+    mcNo:string;
+    w9FileUrl:string;
+    insuranceFileUrl:string;
+}
+
 export interface ShipmentModel {
     id: string;
     userId: string;

@@ -1,0 +1,43 @@
+:host {
+  display: block;
+  margin-top: 1rem;
+}
+
+.open-close-container {
+  border: 1px solid #dddddd;
+  margin-top: 1em;
+  padding: 20px 20px 0px 20px;
+  color: #000000;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+td.align-top {
+  vertical-align: top;
+}
+
+.inventory-grid {
+  grid-template-columns: 48px auto 40px;
+
+  @screen sm {
+    grid-template-columns: 48px auto 112px 72px;
+  }
+
+  @screen md {
+    grid-template-columns: 48px 112px auto 112px 72px;
+  }
+
+  @screen lg {
+    grid-template-columns: 48px auto auto auto 96px 96px 72px;
+  }
+
+  .mt-header {
+    ::ng-deep .mat-sort-header-content {
+      text-align: left !important;
+    }
+  }
+}
+
+.text-wrap {
+  text-wrap: wrap !important;
+}

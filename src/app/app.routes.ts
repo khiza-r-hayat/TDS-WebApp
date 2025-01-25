@@ -146,6 +146,12 @@ export const appRoutes: Route[] = [
                 canActivate: [RouteGuard],
             },
             {
+                path: 'approvals',
+                loadChildren: () =>
+                    import('app/modules/admin/approvals/approvals.routes'),
+                canActivate: [RouteGuard],
+            },
+            {
                 path: 'shipments',
                 loadChildren: () =>
                     import('app/modules/admin/shipments/shipments.routes'),

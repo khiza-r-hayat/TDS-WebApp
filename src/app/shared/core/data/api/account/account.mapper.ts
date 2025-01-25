@@ -1,5 +1,4 @@
 import {
-    AccountModel,
     UserModel,
     UserResponse,
 } from 'app/shared/core/domain/models/account.model';
@@ -20,6 +19,7 @@ export class AccountMapper extends Mapper<UserResponse, UserModel> {
             updatedAt: param.updatedAt,
             createdBy: param.createdBy,
             role: param.role,
+            approvalRequest: param.approvalRequest,
         };
     }
 
@@ -37,6 +37,7 @@ export class AccountMapper extends Mapper<UserResponse, UserModel> {
             updatedAt: param.updatedAt,
             createdBy: param.createdBy,
             role: param.role,
+            approvalRequest: param.approvalRequest,
         };
     }
 }

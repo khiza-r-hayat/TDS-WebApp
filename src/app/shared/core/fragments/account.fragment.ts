@@ -14,6 +14,19 @@ export const UserRoleQL = gql`
   }
 `;
 
+export const UserApprovalRequestQL = gql`
+ fragment UserApprovalRequestQL on approval_request {
+  id
+  orgName
+  roleId
+  approved
+  userId
+  mcNo
+  w9FileUrl
+  insuranceFileUrl
+}
+`;
+
 export const SessionQL = gql`
   fragment SessionQL on user_session {
     id
@@ -81,20 +94,24 @@ export const AccountsQL = gql`
 
 export const UserQL = gql`
   fragment UserQL on user {
+  id
+  title
+  email
+  phone
+  active
+  createdAt
+  updatedAt
+  photo
+  createdBy
+  roleId
+  isSuperAdmin
+  role {
     id
     title
-    email
-    phone
-    active
-    createdAt
-    updatedAt
-    photo
-    createdBy
-    roleId
-    role {
-      id
-      title
-    }
-    isSuperAdmin
   }
+  approvalRequest{
+    ...UserApprovalRequestQL
+  }
+}
+${UserApprovalRequestQL}
 `;

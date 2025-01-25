@@ -150,7 +150,6 @@ export class AccountListComponent {
   // -----------------------------------------------------------------------------------------------------
 
   ngOnInit(): void {
-    console.log("ngOnInit: ",this.roles());
     this.dataSource = new MatTableDataSource(this.accounts());
    }
 

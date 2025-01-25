@@ -4,198 +4,57 @@
         <div class="bg-card rounded-3xl w-full m-4 sm:w-4/5">
             <div
                 class="flex items-center w-full h-15 sm:h-20 px-8 sm:px-12 gradient-background dark:bg-accent-700 rounded-t-xl">
-                <div class="text-3xl font-bold text-white truncate">{{!isActiveUser()?'Request Verification':'Apply Subbscription'}}</div>
+                <div class="text-3xl font-bold text-white truncate">
+                    {{userApprovalRequest() && userApprovalRequest().length ?
+                    'Wait for your request to be approved by admin!' : 'Request Verification'}}
+                </div>
             </div>
             <form [formGroup]="form">
                 <!-- grid sm:grid-cols-6 gap-6  -->
-                <div class="w-full mb-10 p-10">
-                    <!-- Location and Timing -->
-                    <div class="flex flex-col sm:col-span-6 mb-4">
-                        <strong class="text-lg">Personal Information</strong>
-                        <mat-divider class="my-2"></mat-divider>
-                    </div>
-                    <div class="flex flex-col sm:flex-row">
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Origin</mat-label>
-                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
-                            <input type="text" placeholder="Origin" aria-label="Number" matInput
-                                formControlName="origin" [matAutocomplete]="autoO">
-                            <mat-autocomplete autoActiveFirstOption #autoO="matAutocomplete"
-                                [displayWith]="displayLocation">
-                                @for (item of originLocations$ |async; track $index) {
-                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
-                                }
-                            </mat-autocomplete>
-                        </mat-form-field>
-                        <div class="mx-2"></div>
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Destination</mat-label>
-                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                                [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
-                            <input type="text" placeholder="Destination" aria-label="Number" matInput
-                                formControlName="destination" [matAutocomplete]="autoD">
-                            <mat-autocomplete autoActiveFirstOption #autoD="matAutocomplete"
-                                [displayWith]="displayLocation">
-                                @for (item of destinationLocations$ |async; track $index) {
-                                <mat-option [value]="item.id"> {{item.name}}{{' , '}} {{item.country}}</mat-option>
-                                }
-                            </mat-autocomplete>
-                        </mat-form-field>
-                    </div>
-                    <div class="flex flex-col sm:flex-row">
-                        <!-- class="sm:col-span-1" -->
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Pickup Earliest</mat-label>
-                            <input matInput placeholder="Pickup Earliest" [matDatepicker]="pickupEarliest"
-                                [formControlName]="'pickupEarliest'" min="0">
-                            <mat-datepicker-toggle matSuffix [for]="pickupEarliest"></mat-datepicker-toggle>
-                            <mat-datepicker #pickupEarliest></mat-datepicker>
-                        </mat-form-field>
-
-                        <div class="mx-1"></div>
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Pickup Latest</mat-label>
-                            <input matInput [matDatepicker]="pickupLatest" placeholder="Pickup Latest"
-                                [formControlName]="'pickupLatest'" min="0">
-                            <mat-datepicker-toggle matSuffix [for]="pickupLatest"></mat-datepicker-toggle>
-                            <mat-datepicker #pickupLatest></mat-datepicker>
-                        </mat-form-field>
-
-                        <div class="mx-2"></div>
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Pick Up Hours</mat-label>
-                            <input matInput placeholder="Pickup Hours" formControlName="pickupHours" type="number">
-                        </mat-form-field>
-
-
-                        <div class="mx-1"></div>
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Drop Off Hours</mat-label>
-                            <input matInput placeholder="Dropoff Hours" formControlName="dropoffHours" type="number">
-                        </mat-form-field>
-
-                    </div>
-                    <!-- Equipment Details -->
-                    <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong class="text-lg"> Equipment Details</strong>
-                        <mat-divider class="my-2"></mat-divider>
-                    </div>
-                    <div class="flex flex-col sm:flex-row">
-                        <!-- class="sm:col-span-1" -->
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Equipment Type</mat-label>
-                            <mat-icon matPrefix class="hidden sm:flex icon-size-5"
-                                [svgIcon]="'heroicons_solid:truck'"></mat-icon>
-                            <mat-select [formControlName]="'equipment'">
-                                @for (item of equipmentTypes(); track $index) {
-                                <mat-option [value]="item.id">
-                                    <span>{{item.name}}</span>
-                                    <span class="px-4">{{' - '}}</span>
-                                    <span>{{item.short}}</span>
-                                </mat-option>
-                                }
-                            </mat-select>
-                        </mat-form-field>
-
-                        <div class="mx-2"></div>
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Length (ft)</mat-label>
-                            <input matInput placeholder="Length (ft)" formControlName="availableLength" type="number">
-                        </mat-form-field>
-
-                        <div class="mx-1"></div>
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full">
-                            <mat-label>Weight (kg)</mat-label>
-                            <input matInput placeholder="Weight (kg)" formControlName="weight" type="number">
-                        </mat-form-field>
-
-                    </div>
-
-                    <!-- Additional Information -->
-                    <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong class="text-lg"> Additional Information</strong>
-                        <mat-divider class="my-2"></mat-divider>
-                    </div>
-                    <div class="flex flex-col sm:flex-row">
-                        <!-- class="sm:col-span-1" -->
-
-                        <mat-form-field class="fuse-mat-no-subscript w-full sm:w-3/6">
-                            <mat-label>Comments</mat-label>
-                            <textarea class="w-full h-32" matInput placeholder="Comments" formControlName="comments"
-                                type="text"></textarea>
-                        </mat-form-field>
-
-                        <div class="mx-2"></div>
-                        <div class="flex flex-col w-full sm:w-3/6">
-                            <mat-form-field class="fuse-mat-no-subscript w-full">
-                                <mat-label>Commodity</mat-label>
-                                <input matInput placeholder="Commodity" formControlName="commodity" type="text">
-                            </mat-form-field>
-
-                            <div class="my-2"></div>
-
-                            <mat-form-field class="fuse-mat-no-subscript w-full">
-                                <mat-label>Reference ID</mat-label>
-                                <input matInput placeholder="Reference ID" formControlName="refId" type="text">
-                            </mat-form-field>
-                        </div>
-
-                    </div>
-
-                    <!-- Contact Info -->
-                    <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong class="text-lg">Contacts And Rate</strong>
-                        <mat-divider class="my-2"></mat-divider>
-                    </div>
-                    <div class="flex flex-col sm:flex-row">
-                        <div class="flex flex-col w-full sm:w-3/6">
-                            <div class="flex flex-col sm:flex-row">
-                                <p>Contacts can be updated in</p>
-                                <a class="font-bold text-primary-600 ml-1 cursor-pointer" (click)="goToProfile()">your profile</a>
-                            </div>
-
-                            <mat-radio-group class="flex flex-col" formControlName="contact">
-                                <mat-radio-button value="phone">Phone</mat-radio-button>
-                                <mat-radio-button value="email">Email</mat-radio-button>
-                            </mat-radio-group>
-
-                        </div>
-                        <mat-form-field class="fuse-mat-no-subscript w-full mt-4 sm:w-3/6">
-                            <mat-label>Rate/Trip</mat-label>
-                            <input matInput placeholder="Rate/Trip" formControlName="rate" type="text">
-                            <!-- (input)="formatAmount($event)" -->
-                        </mat-form-field>
-                    </div>
-
-                    <!-- Booking and Rate -->
-                    <!-- <div class="flex flex-col sm:col-span-6 my-4">
-                        <strong class="text-lg">Booking and Rate</strong>
-                        <mat-divider class="my-2"></mat-divider>
-                    </div>
-                    <mat-form-field class="fuse-mat-no-subscript w-3/6">
-                        <mat-label>Rate/Trip</mat-label>
-                        <input matInput placeholder="Rate/Trip" formControlName="rate" type="text" (input)="formatRate()">
-                    </mat-form-field> -->
-
+                <div class="grid grid-cols-2 gap-3 w-full mb-5 p-10">
+                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                        <mat-label>Organization Name</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                            [svgIcon]="'heroicons_solid:building-office'"></mat-icon>
+                        <input type="text" placeholder="Organization" matInput formControlName="orgName">
+                    </mat-form-field>
+                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                        <mat-label>Required Plan</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                            [svgIcon]="'heroicons_solid:banknotes'"></mat-icon>
+                        <mat-select [formControlName]="'roleId'" (selectionChange)="roleChange($event.value)">
+                            @for (item of roles(); track $index) {
+                            <mat-option [value]="item.id">
+                                {{item.title}}
+                            </mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+                    @if(showMcNoField()){
+                    <mat-form-field class="fuse-mat-no-subscript w-full">
+                        <mat-label>Motor Carrier No</mat-label>
+                        <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                            [svgIcon]="'heroicons_solid:building-office'"></mat-icon>
+                        <input type="text" placeholder="mcNo" matInput formControlName="mcNo">
+                    </mat-form-field>
+                    }
                 </div>
 
-                <!-- <div class="py-10 flex items-center justify-between"> -->
+                <!-- Add file pickers -->
+                <div class="grid grid-cols-2 gap-3 w-full mb-5 p-10">
+                    <div class="flex flex-col fuse-mat-no-subscript w-full">
+                        <mat-label>Upload W9 form</mat-label>
+                        <input class="mt-4" type="file" [multiple]="false" [accept]="
+                                                'image/jpeg, image/png, image/jpg'" formControlName="file1" (change)="onFileSelected($event, 'file1')">
+                    </div>
+                    <div class="flex flex-col fuse-mat-no-subscript w-full">
+                        <mat-label>Certificate of Insurance</mat-label>
+                        <input class="mt-4" type="file" [multiple]="false" [accept]="
+                                                'image/jpeg, image/png, image/jpg'" formControlName="file2" (change)="onFileSelected($event, 'file2')">
+                    </div>
+                </div>
 
-                <!-- Add data entry locally -->
                 <div class="flex flex-grow justify-center mb-5">
-
-                    <button mat-stroked-button [matTooltip]="'Cancel'" [routerLink]="['../']">
-                        <p class="text-primary-600">Cancel</p>
-                    </button>
-
                     <!-- Save -->
                     <button class="ml-2" mat-flat-button [color]="'primary'" [disabled]="form.invalid || isSaving()"
                         [matTooltip]="'Save'" (click)="save()">

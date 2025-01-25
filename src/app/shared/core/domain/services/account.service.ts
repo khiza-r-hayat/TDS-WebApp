@@ -21,7 +21,6 @@ export class AccountService {
     private api = inject(AccountRepository);
     // private logger = inject(LogService);
     private messageService = inject(MessageService);
-    private sessionService = inject(UserSessionService);
 
     private accountMapper = new AccountMapper();
     private roleMapper = new RoleMapper();
@@ -202,11 +201,11 @@ export class AccountService {
             }),
             map((res: UserModel[]) => {
                 if (res) {
-                    console.log(
-                        `Added ${accounts.length} ${
-                            accounts.length === 1 ? 'user' : 'users'
-                        } successfuly!`
-                    );
+                    // console.log(
+                    //     `Added ${accounts.length} ${
+                    //         accounts.length === 1 ? 'user' : 'users'
+                    //     } successfuly!`
+                    // );
 
                     this.updateAccountssLocally(res);
                 }

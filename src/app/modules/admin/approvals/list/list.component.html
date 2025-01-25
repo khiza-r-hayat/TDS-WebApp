@@ -1,0 +1,381 @@
+<div class="absolute inset-0 flex min-w-0 flex-col overflow-hidden">
+    <!-- Main -->
+    <!-- Header -->
+    <div class="bg-card">
+        <div class="flex flex-col w-full max-w-screen-xl mx-auto px-6 sm:px-0">
+            <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-2 sm:my-12 md:my-12">
+                <!-- Title -->
+                <div class="flex flex-auto items-center min-w-0">
+                    <div class="flex flex-col min-w-0 ">
+                        <ng-container *transloco="let t">
+                            <div class="text-4xl font-extrabold tracking-tight">User Accounts</div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
+                            <button class="bg-accent" mat-flat-button [routerLink]="['/accounts/add']"
+                                [color]="'accent'">
+                                <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
+                                <span class="ml-2">Add new</span>
+                            </button>
+                        </div> -->
+
+            </div>
+
+        </div>
+    </div>
+    <div class="flex-auto -mt-px">
+        <div class="w-full max-w-screen-xl mx-auto">
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
+                <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
+                    <!-- header row -->
+                    <div class="p-6 flex flex-col sm:flex-row items-center justify-between">
+                        <div>
+                            <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
+                                User
+                                Accounts
+                            </div>
+                            <div class="text-secondary font-medium">Total {{this.accounts().length}}
+                            </div>
+                        </div>
+                        <div class="flex flex-row flex-wrap items-center">
+                            <div class="flex flex-col sm:flex-row items-center">
+                                <div class="flex flex-col items-start">
+                                    <mat-form-field
+                                        class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-52">
+                                        <mat-icon class="icon-size-5" matPrefix
+                                            svgIcon="heroicons_solid:magnifying-glass"></mat-icon>
+                                        <input matInput (input)="filterBySearch($event.target.value)"
+                                            placeholder="Search" />
+                                    </mat-form-field>
+
+                                </div>
+                            </div>
+
+                            <!-- <div class="flex-auto  ml-1">
+                                        <mat-form-field
+                                            class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-40">
+
+                                            <mat-select (selectionChange)="filterByRole($event)" [value]="role()"
+                                                placeholder="Filter by Role">
+                                                <ng-container>
+                                                    @for(opt of roles();track opt){
+                                                    <mat-option [value]="opt.id">{{
+                                                        opt.title
+                                                        }}</mat-option>
+                                                    }
+                                                </ng-container>
+                                            </mat-select>
+                                            @if(role()!==0){
+                                            <button mat-icon-button matSuffix (click)="filterByRole({value:0})">
+                                                <mat-icon svgIcon="heroicons_outline:x-circle"></mat-icon>
+                                            </button>
+                                            }
+                                        </mat-form-field>
+                                    </div> -->
+                            @if(this.selection.selected.length> 0){
+                            <div class="max-w-32 pb-4">
+                                <span>
+                                    <span
+                                        class="ml-2 px-4 py-2 font-semibold rounded-full flex bg-slate-300 text-sky-800">{{this.selection.selected.length}}
+                                        Selected</span>
+                                </span>
+                            </div>
+                            }
+                        </div>
+                        <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3 max-w-60">
+                            <button [disabled]="!enableActions()" class="hidden sm:inline-flex ml-3" mat-flat-button
+                                [color]="'primary'" [matMenuTriggerFor]="impressionsMenu">
+                                <span>Actions</span>
+                                <mat-icon class="icon-size-5"
+                                    [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
+                            </button>
+                            <mat-menu class="overflow-hidden max-w-64" #impressionsMenu="matMenu">
+                                <button (click)="activate()" class="hidden sm:inline-flex " mat-flat-button>
+                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:no-symbol'"></mat-icon>
+                                    <span class="ml-2">Acitvate Users</span>
+                                </button>
+                            </mat-menu>
+                            <div class="sm:hidden">
+                                <button [matMenuTriggerFor]="actionsMenu" mat-icon-button>
+                                    <mat-icon [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
+                                </button>
+                                <mat-menu #actionsMenu="matMenu">
+
+                                    <!-- <button (click)="exportToExcel()" mat-menu-item>
+                                                                                    Export Selected
+                                                                                </button> -->
+                                    <button (click)="activate()" mat-menu-item>
+                                        Acitvate Users
+                                    </button>
+
+                                </mat-menu>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <!-- Table -->
+                    <div class="flex flex-col flex-auto mx-6 overflow-x-auto">
+                        <table class="w-full bg-transparent overflow-y-visible" mat-table [dataSource]="dataSource"
+                            [trackBy]="trackByFn" matSort>
+                            <ng-container matColumnDef="Select">
+                                <th class="pmt-header" mat-header-cell *matHeaderCellDef>
+                                    @if(accounts().length){
+                                    <mat-checkbox #selectAll (change)="masterToggle($event)"></mat-checkbox>
+                                    }
+                                </th>
+                                <td mat-cell *matCellDef="let assessment">
+                                    <span class="pr-2 whitespace-nowrap">
+                                        <mat-checkbox (click)="selectRow($event)"
+                                            (change)="$event? selection.toggle(assessment): null"
+                                            [checked]="selection.isSelected(assessment)">
+                                        </mat-checkbox>
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="title">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Title
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.title}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <!-- <ng-container matColumnDef="lastName">
+                                        <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                            Last Name
+                                        </th>
+                                        <td class="px-2" mat-cell *matCellDef="let account">
+                                            <span class="pr-6 whitespace-nowrap">
+                                                {{account.lastName}}
+                                            </span>
+                                        </td>
+                                    </ng-container> -->
+                            <ng-container matColumnDef="email">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Email
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.email}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <!-- <ng-container matColumnDef="userRole">
+                                        <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                            Role
+                                        </th>
+                                        <td class="px-2" mat-cell *matCellDef="let account">
+                                            <span class="pr-6 whitespace-nowrap">
+                                                {{(account.roleId | fuseFindByKey:'id':roles()).title }}
+                                            </span>
+                                        </td>
+                                    </ng-container> -->
+                            <ng-container matColumnDef="status">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Status
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.active?'Active':'InActive' }}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <!-- <ng-container matColumnDef="campaigns">
+                                        <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                            # of Campaigns
+                                        </th>
+                                        <td class="px-2" mat-cell *matCellDef="let account">
+                                            <button mat-button color="primary" class="pr-6  whitespace-nowrap"
+                                                (click)="viewCampaigns(account.id)">
+                                                <strong>{{account.campaigns}}</strong>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="company">
+                                        <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                            Company
+                                        </th>
+                                        <td class="px-2" mat-cell *matCellDef="let account">
+                                            <span class="pr-6 whitespace-nowrap">
+                                                {{account | companynamepipe}}
+                                            </span>
+                                        </td>
+                                    </ng-container> -->
+
+
+                            <ng-container matColumnDef="createdAt">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Created On
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{ account.createdAt | date:'MMM dd, y @ h:mm a' }}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            @if(false){
+
+                            <ng-container matColumnDef="lastWelcomeEmailSend">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Welcome Email Sent On
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.lastWelcomeEmailSend | date:'MMM dd, y @h:mm a'}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="lastLoginWeb">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Last Login Web
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.lastLoginWeb | date:'MMM dd, y @ h:mm a'}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            <ng-container matColumnDef="lastLoginMobile">
+                                <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
+                                    Last Login Mobile
+                                </th>
+                                <td class="px-2" mat-cell *matCellDef="let account">
+                                    <span class="pr-6 whitespace-nowrap">
+                                        {{account.lastLoginMobile | date:'MMM dd, y @ h:mma'}}
+                                    </span>
+                                </td>
+                            </ng-container>
+                            }
+
+                            <ng-container matColumnDef="action">
+                                <th class="mt-header" mat-header-cell *matHeaderCellDef>
+                                    Action
+                                </th>
+                                <td class="pr-2" mat-cell *matCellDef="let account">
+                                    <div class="flex mt-2">
+                                        <!-- <span class="font-medium mr-2 whitespace-nowrap">
+                                                    <a [routerLinkActive]="'active'"
+                                                        [routerLink]="['/accounts/' + account.id ]">
+                                                        <button [matTooltip]="'Edit User'">
+                                                            <mat-icon [svgIcon]="'heroicons_outline:pencil'"
+                                                                color="primary"></mat-icon>
+                                                        </button>
+                                                    </a>
+                                                </span> -->
+                                        <!-- [disabled]="checkLoginAction(account)" -->
+                                        <!-- [disabled]="checkDeleteAction(account)" -->
+                                        <span class="font-medium ml-1 whitespace-nowrap">
+                                            <button (click)="activate(account)" [matTooltip]="'Activate User'">
+                                                <mat-icon class="icon-size-7 text-green-500"
+                                                    [svgIcon]="'heroicons_solid:check-badge'"></mat-icon>
+                                            </button>
+                                        </span>
+                                        <span class="font-bold mx-1 whitespace-nowrap">
+                                            <button (click)="viewApprovalRequest(account)"
+                                                [matTooltip]="'View Request'">
+                                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:eye'"
+                                                    color="primary"></mat-icon>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </td>
+                            </ng-container>
+                            <ng-container>
+                                <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+                                <tr class="order-row h-16" mat-row *matRowDef="let row; columns: tableColumns;">
+                                </tr>
+                            </ng-container>
+                        </table>
+                        <mat-paginator #paginator [pageSize]="itemsPerPage"
+                            [pageSizeOptions]="[20, 50, 80, 100]"></mat-paginator>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<ng-template #approvalRequestView>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+        <!-- Modal Header -->
+        <div class="mb-4 border-b pb-2 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                Approval Request Details
+            </h2>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Organization Name -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Organization
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ accountInView().approvalRequest.orgName }}
+                </p>
+            </div>
+
+            <!-- Requested Role -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Requested Role
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ (accountInView().approvalRequest.roleId | fuseFindByKey: 'id': roles()).title }}
+                </p>
+            </div>
+
+            <!-- Motor Carrier Number -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Motor Carrier No
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ accountInView().approvalRequest.mcNo }}
+                </p>
+            </div>
+
+            <!-- W9 File URL -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    W9 File URL
+                </p>
+                <a href="{{ accountInView().approvalRequest.w9FileUrl }}" target="_blank"
+                    class="text-base font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                    View File
+                </a>
+            </div>
+
+            <!-- Insurance File URL -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Insurance File URL
+                </p>
+                <a href="{{ accountInView().approvalRequest.insuranceFileUrl }}" target="_blank"
+                    class="text-base font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                    View File
+                </a>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="mt-6 flex justify-end space-x-3">
+            <button
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                (click)="close()">
+                Close
+            </button>
+            <button
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
+                (click)="activate(accountInView())">
+                Approve
+            </button>
+        </div>
+    </div>
+</ng-template>

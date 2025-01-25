@@ -2,7 +2,7 @@ import { Inject } from '@angular/core';
 import { Routes } from '@angular/router';
 import { SubscriptionService } from 'app/shared/core/domain/services/subscription.service';
 import { SubscriptionsComponent } from './subscription.component';
-import { subscriptionTypesAndPlansResolver } from './subscription.resolver';
+import { subscriptionTypesAndPlansResolver, userApprovalRequestResolver } from './subscription.resolver';
 
 export default [
     {
@@ -10,6 +10,7 @@ export default [
         component: SubscriptionsComponent,
         resolve: {
             data: subscriptionTypesAndPlansResolver,
+            approvalRequests: userApprovalRequestResolver,
         },
     },
 ] as Routes;

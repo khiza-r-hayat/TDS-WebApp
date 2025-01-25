@@ -31,8 +31,28 @@ export class ConfirmationDialogs {
       }?`,
       actions: {
         confirm: {
-          label: CONSTANTS.DELETE,
+          label: CONSTANTS.DISABLE,
         },
+      },
+    });
+    return confirmation;
+  }
+  
+  confirmApproval(entityName: string, multiple: boolean) {
+    const confirmation = this._fuseConfirmationService.open({
+      title: `Approve ${entityName}`,
+      message: `Are you sure you want to approve ${
+        multiple ? `selected ${entityName}s` : `this ${entityName}`
+      }?`,
+      icon: {
+        color: "primary",
+      },
+      actions: {
+        confirm: {
+          label: CONSTANTS.APPROVE,
+          color: "primary",
+        },
+
       },
     });
     return confirmation;

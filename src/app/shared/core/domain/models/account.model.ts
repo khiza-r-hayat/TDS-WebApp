@@ -3,6 +3,7 @@ import { Tenant } from "./tenant.model";
 import { EventModel } from "./event.model";
 import { Sponsor } from "./sponsor.model";
 import { CampaignModel } from "./campaign.modal";
+import { UserApprovalModel } from "./brand.model";
 
 export interface UserModel {
   id: string;
@@ -19,6 +20,7 @@ export interface UserModel {
   subscriptionId?: string;
   createdInFirebase?: boolean;
   role?: Role;
+  approvalRequest?:UserApprovalModel
 }
 
 export interface UserModelUpload {
@@ -53,6 +55,7 @@ export interface UserResponse {
   subscriptionId?: any;
   createdInFirebase?: any;
   role?: any;
+  approvalRequest?:UserApprovalModel
 }
 
 export interface AccountModel {

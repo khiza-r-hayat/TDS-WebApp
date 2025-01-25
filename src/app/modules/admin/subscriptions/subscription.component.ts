@@ -1,6 +1,5 @@
 import { TextFieldModule } from '@angular/cdk/text-field';
-import { AsyncPipe } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, ElementRef, signal, ViewChild } from '@angular/core';
 import {
     FormsModule,
     ReactiveFormsModule,
@@ -8,34 +7,22 @@ import {
     UntypedFormGroup,
     Validators,
 } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule, MatRippleModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatDivider } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from 'app/core/user/user.service';
 import { User } from 'app/core/user/user.types';
+import { FirebaseService } from 'app/shared/core/classes/firebase_utils';
+import { UserRole } from 'app/shared/core/classes/roles';
 import { Utility } from 'app/shared/core/classes/utility';
-import {
-    EquipmentType,
-    LocalLocation,
-    equipmentTypes,
-    pakistan_locations,
-} from 'app/shared/core/data/data_sets/cities_and_state';
-import { ShipmentHelper } from 'app/shared/core/domain/helpers/shipment.helper';
-import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
-import { BrandService } from 'app/shared/core/domain/services/brand.service';
-import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
-import { Observable, map, startWith } from 'rxjs';
+import { UserApprovalModel } from 'app/shared/core/domain/models/brand.model';
+import { SubscriptionService } from 'app/shared/core/domain/services/subscription.service';
 
 @Component({
     selector: 'subscription',
@@ -43,38 +30,29 @@ import { Observable, map, startWith } from 'rxjs';
     imports: [
         MatButtonModule,
         MatTooltipModule,
-        RouterLink,
         MatIconModule,
         FormsModule,
         ReactiveFormsModule,
         MatRippleModule,
         MatFormFieldModule,
         MatInputModule,
-        MatCheckboxModule,
         MatSelectModule,
         MatOptionModule,
-        MatDatepickerModule,
         TextFieldModule,
-        MatAutocompleteModule,
-        MatRadioModule,
-        MatDivider,
-        AsyncPipe,
     ],
     templateUrl: './subscription.component.html',
 })
 export class SubscriptionsComponent {
+     file1: File = null;
+     file2: File = null;
     //<--------------------- Flag Variables ---------------------->
     isSaving = signal<boolean>(false);
     isActiveUser = signal<boolean>(false);
+    showMcNoField = signal<boolean>(false);
     hasSubscription = signal<boolean>(false);
-    editMode: boolean = false;
     //<--------------------- Data Variables ---------------------->
-    shipmentId: string = null;
     form: UntypedFormGroup;
     userId = null;
-
-    shipment = computed(() => this._shipmentService.shipment());
-    locations = pakistan_locations;
 
     // minDate = Date();
     // maxDate = Date();
@@ -83,17 +61,22 @@ export class SubscriptionsComponent {
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        // private _brandListComponent: BrandListComponent,
-        private _brandService: BrandService,
-        private _shipmentService: ShipmentService,
+        private _subscriptionService: SubscriptionService,
         private _userService: UserService,
-        private _snackbar: MatSnackBar
+        private _snackbar: MatSnackBar,
+        private _firebaseService: FirebaseService
         // private logger: LogService
     ) {}
 
-    originLocations$!: Observable<LocalLocation[]>;
-    destinationLocations$!: Observable<LocalLocation[]>;
-    equipmentTypes = signal<EquipmentType[]>(equipmentTypes);
+    roles = computed(() =>
+        this._subscriptionService
+            .roles()
+            .filter((r) => r.id !== UserRole.SUPER_ADMINISTRATOR)
+    );
+
+    userApprovalRequest = computed(() =>
+        this._subscriptionService.userApprovalRequests()
+    );
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle Hooks
@@ -105,16 +88,7 @@ export class SubscriptionsComponent {
             this.userId = user.id;
         });
 
-        if (!this._router.url.includes('add')) {
-            this.editMode = true;
-            this.shipmentId = this._activatedRoute.snapshot.paramMap.get('id');
-        } else {
-            this.shipmentId = Utility.generateUUID();
-        }
-
-        // this._brandListComponent.matDrawer.open();
         this.initializeForm();
-        this.setUpAutoCompleteFilters();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -123,136 +97,109 @@ export class SubscriptionsComponent {
 
     initializeForm() {
         this.form = this._formBuilder.group({
-            origin: ['', [Validators.required]],
-            destination: ['', [Validators.required]],
-            pickupEarliest: ['', [Validators.required]],
-            pickupLatest: '',
-            pickupHours: '',
-            dropoffHours: '',
-            equipment: ['', [Validators.required]],
-            availableLength: ['', [Validators.required]],
-            weight: ['', [Validators.required]],
-            comments: '',
-            commodity: '',
-            refId: '',
-            contact: ['phone', [Validators.required]],
-            rate: ['', [Validators.required]],
+            orgName: ['', [Validators.required]],
+            roleId: ['', [Validators.required]],
+            mcNo: [''],
+            file1: [null, Validators.required], // Example: Required file
+            file2: [null, Validators.required],
         });
-        if (this.editMode) {
-            this.patchForm(this.shipment());
+        if (this.userApprovalRequest() && this.userApprovalRequest().length) {
+            this.patchForm(this.userApprovalRequest()[0]);
         }
     }
 
-    patchForm(shipment: ShipmentModel) {
+    patchForm(rqst: UserApprovalModel) {
         this.form.patchValue({
-            id: shipment.id,
-            userId: shipment.userId,
-            origin: shipment.originId,
-            destination: shipment.destinationId,
-            pickupEarliest: shipment.pickupEarliest,
-            pickupLatest: shipment.pickupLatest,
-            pickupHours: shipment.pickupHours,
-            dropoffHours: shipment.dropoffHours,
-            equipment: shipment.equipmentId,
-            availableLength: shipment.availableLength,
-            weight: shipment.weight,
-            comments: shipment.comments,
-            commodity: shipment.commodity,
-            refId: shipment.refId,
-            contact: shipment.contact,
-            rate: shipment.rate,
+            orgName: rqst.orgName,
+            roleId: rqst.roleId,
+            mcNo: rqst.mcNo ?? '',
         });
+        this.isSaving.set(true);
+        this.form.disable();
     }
+
+    roleChange(roleId) {
+        const control = this.form.get('mcNo');
+        switch (roleId) {
+            case UserRole.OPERATOR_ADMIN:
+                {
+                    control.addValidators([Validators.required]);
+                    this.showMcNoField.set(true);
+                }
+                break;
+            case UserRole.SHIPMENT_ADMIN:
+                {
+                    control.removeValidators([Validators.required]);
+                    this.showMcNoField.set(false);
+                }
+                break;
+        }
+        control.updateValueAndValidity();
+    }
+    
 
     // -----------------------------------------------------------------------------------------------------
     // @ Form Modification Methods
     // -----------------------------------------------------------------------------------------------------
 
-    // formatAmount(event: any) {
-    //     const input = event.target;
-    //     let value = input.value.replace(/[^0-9]/g, '');
-
-    //     // Store cursor position relative to the number
-    //     const cursorPos = input.selectionStart - 4; // Adjust for "PKR "
-
-    //     const formattedValue = `PKR ${Number(value).toLocaleString()} /Trip`;
-    //     input.value = formattedValue;
-
-    //     // Place cursor back in number section
-    //     const numberEndIndex = formattedValue.indexOf(' /Trip');
-    //     const newPos = Math.min(cursorPos + 4, numberEndIndex);
-    //     input.setSelectionRange(newPos, newPos);
-    // }
-
-    setUpAutoCompleteFilters() {
-        this.originLocations$ = this.form.get('origin').valueChanges.pipe(
-            startWith(''),
-            map((value) => {
-                const key = typeof value === 'string' ? value : value?.title;
-                return key
-                    ? this._filterInput(key)
-                    : pakistan_locations.slice();
-            })
-        );
-
-        this.destinationLocations$ = this.form
-            .get('destination')
-            .valueChanges.pipe(
-                startWith(''),
-                map((value) => {
-                    const key =
-                        typeof value === 'string' ? value : value?.title;
-                    return key
-                        ? this._filterInput(key)
-                        : pakistan_locations.slice();
-                })
-            );
-    }
-
-    private _filterInput(name: string): any[] {
-        const filterValue = name.toLowerCase();
-        return pakistan_locations.filter((role) =>
-            role.name.toLowerCase().includes(filterValue)
-        );
-    }
-
-    displayLocation(locationId: string) {
-        if (!locationId) return '';
-        const location = pakistan_locations.find(
-            (location) => location.id === locationId
-        );
-        return `${location.name} ,  ${location.country ?? ''}`;
-    }
-
-    goToProfile(): void {
-        ////console.log(this.user);
-
-        this._router.navigate(['/profile/', this.userId]);
+    onFileSelected(event: Event, controlName: string): void {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            if(controlName==='file1'){
+                this.file1 = file;
+            }else{
+                this.file2 = file;
+            }
+            this.form.get(controlName)?.setValue(file);
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Upload/Save Methods
     // -----------------------------------------------------------------------------------------------------
 
-    save() {
-        let formData = this.form.getRawValue();
-        const upload: ShipmentModel =
-            ShipmentHelper.generateShipmentUploadObject(
-                formData,
-                this.shipmentId,
-                this.userId
+    async save(){
+        try {
+            let formData = this.form.getRawValue();
+
+            const file1Url = await this._firebaseService.uploadFile(
+                this.file1,
+                `approval_documents/${formData.file1.name}`
+            );
+            const file2Url = await this._firebaseService.uploadFile(
+                formData.file2,
+                `approval_documents/${formData.file2.name}`
             );
 
-        // console.log('form value:', upload);
+            const upload: UserApprovalModel = {
+                id: Utility.generateUUID(),
+                userId: this.userId,
+                orgName: formData.orgName,
+                roleId: formData.roleId,
+                approved: false,
+                mcNo: formData.mcNo,
+                w9FileUrl: file1Url,
+                insuranceFileUrl: file2Url,
+            };
 
-        this._shipmentService.upsertShipments([upload]).subscribe((res) => {
-            this._snackbar.open('Shipment Saved', 'Close', {
+            // console.log('form value:', upload);
+
+            this._subscriptionService
+                .upsertApprovalRequest([upload])
+                .subscribe((res) => {
+                    this.isSaving.set(true);
+                    this._snackbar.open('Request Sent for approval!', 'Close', {
+                        duration: 3000,
+                    });
+
+                    this.form.disable();
+                });
+        } catch (e) {
+            console.log(e);
+            this._snackbar.open('Something went wrong!', 'Close', {
                 duration: 3000,
             });
-
-            setTimeout(() => {
-                this._router.navigate(['../']);
-            }, 3000);
-        });
+        }
     }
 }

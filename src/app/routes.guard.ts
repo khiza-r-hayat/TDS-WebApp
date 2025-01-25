@@ -16,6 +16,11 @@ const roleAcess = [
         active: true,
     },
     {
+        route: 'approvals',
+        roles: [UserRole.SUPER_ADMINISTRATOR],
+        active: true,
+    },
+    {
         route: 'accounts',
         roles: [UserRole.SUPER_ADMINISTRATOR],
         active: true,
@@ -50,7 +55,7 @@ const roleAcess = [
     },
     {
         route: 'subscription',
-        roles: [UserRole.InActive],
+        roles: [UserRole.NO_ROLE],
         active: true,
     },
     {
@@ -66,9 +71,9 @@ const roleAcess = [
 ];
 
 const userInitialRoutes = {
-    [UserRole.SUPER_ADMINISTRATOR]: 'shipments',
+    [UserRole.SUPER_ADMINISTRATOR]: 'approvals',
     [UserRole.SHIPMENT_ADMIN]: 'shipments',
-    [UserRole.InActive]: 'subscription',
+    [UserRole.NO_ROLE]: 'subscription',
 };
 
 export const RouteGuard: CanActivateFn | CanActivateChildFn = (
@@ -78,7 +83,12 @@ export const RouteGuard: CanActivateFn | CanActivateChildFn = (
     const router: Router = inject(Router);
     const localStorage: LocalStorageService = inject(LocalStorageService);
 
-    const user: User = localStorage.get(environment.sessionKey).user;
+    const session = localStorage.get(environment.sessionKey);
+    if(!session){
+        router.navigate(['/sign-in']);
+        return true;
+    }
+    const user: User = session.user;
 
     if (!user) {
         router.navigate(['/redirect/unauthorized']);

@@ -96,3 +96,32 @@ export const accountsResolver = (
             })
         );
 };
+
+export const noRoleAccountsResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const accountService = inject(AccountService);
+    // const sessionService = inject(UserSessionService);
+    // const logger = inject(LogService);
+    const router = inject(Router);
+
+    return accountService
+        .getAccountsByRoles([UserRole.NO_ROLE])
+        .pipe(
+            // Error here means the requested account is not available
+            catchError((error) => {
+                // Log the error
+                console.log(error);
+
+                // Get the parent url
+                const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+                // Navigate to there
+                router.navigateByUrl(parentUrl);
+
+                // Throw an error
+                return throwError(error);
+            })
+        );
+};
