@@ -1,4 +1,4 @@
-import { AccountModel } from "../core/domain/models/account.model";
+import { UserModel } from "../core/domain/models/account.model";
 import { LogLevel } from "./log.model";
 
 export class LogEntry {
@@ -7,7 +7,7 @@ export class LogEntry {
   level: LogLevel = LogLevel.Debug;
   extraInfo: any[] = [];
   logWithDate: boolean = true;
-  userInfo: AccountModel;
+  userInfo: UserModel;
   impersonatedLevel1: string = "";
   impersonatedLevel2: string = "";
 

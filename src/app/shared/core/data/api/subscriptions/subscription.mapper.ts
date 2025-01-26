@@ -1,4 +1,4 @@
-import { Plan, SubscriptionType } from "app/shared/core/domain/models/tenant.model";
+import { SubscriptionType } from "app/shared/core/domain/models/account.model";
 import { Mapper } from "../../../base/mapper";
 
 export class SubscriptionTypeMapper extends Mapper<SubscriptionType, SubscriptionType> {

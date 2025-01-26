@@ -4,8 +4,7 @@ import { LogPublisher } from "./log-publishers";
 import { LogPublishersService } from "./log-publishers.service";
 import { LogEntry } from "./log-entry.class";
 import { environment } from "environments/environment";
-import { AccountModel } from "../core/domain/models/account.model";
-import { AccountService } from "../core/domain/services/account.service";
+import { UserModel } from "../core/domain/models/account.model";
 import { CONSTANTS } from "../core/classes/utility";
 
 @Injectable({ providedIn: "root" })
@@ -13,7 +12,7 @@ export class LogService {
   publishers: LogPublisher[];
   level: LogLevel = environment.logLevel;
   logWithDate: boolean = false;
-  _loggedInUser: AccountModel;
+  _loggedInUser: UserModel;
   // private _accountService:AccountService = Inject(AccountService);
   //  private _userHelper: UserHelper
   //  private _localStorage: LocalStorageService

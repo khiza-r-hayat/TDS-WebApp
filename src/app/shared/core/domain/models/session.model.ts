@@ -1,5 +1,5 @@
 import { User } from "app/core/user/user.types";
-import { AccountModel, UserModel } from "./account.model";
+import { UserModel } from "./account.model";
 
 export interface UserSession {
   userId: string;
@@ -14,8 +14,8 @@ export interface UserSessionModel {
   impersonatedId: string;
   organizationId: string;
   tenantId: string;
-  impersonatedAs?: AccountModel;
-  user?: AccountModel;
+  impersonatedAs?: UserModel;
+  user?: UserModel;
 }
 
 export interface UserSessionUpload {

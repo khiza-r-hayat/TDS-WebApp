@@ -7,8 +7,6 @@ import * as Query from "app/shared/core/graphql/account.gql";
 import { AccountRepository } from "app/shared/core/domain/repository/account.repository";
 import { AccountMapper } from "./account.mapper";
 import {
-  AccountModel,
-  AccountUpload,
   UserModel,
 } from "app/shared/core/domain/models/account.model";
 import { UserMapper } from "./user.mapper";

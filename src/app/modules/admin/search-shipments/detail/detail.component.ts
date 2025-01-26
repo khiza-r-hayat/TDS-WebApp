@@ -38,8 +38,7 @@ import {
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
 import { ShipmentHelper } from 'app/shared/core/domain/helpers/shipment.helper';
-import { GeoLocationModel, ShipmentModel } from 'app/shared/core/domain/models/brand.model';
-import { BrandService } from 'app/shared/core/domain/services/brand.service';
+import { GeoLocationModel, ShipmentModel } from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 
 @Component({
@@ -93,8 +92,6 @@ export class ShipmentBidComponent implements OnInit, AfterViewInit {
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        // private _brandListComponent: BrandListComponent,
-        private _brandService: BrandService,
         private _shipmentService: ShipmentService,
         private _userService: UserService,
         private _snackbar: MatSnackBar
@@ -232,7 +229,6 @@ export class ShipmentBidComponent implements OnInit, AfterViewInit {
     }
 
     patchForm(shipment: ShipmentModel) {
-        console.log(shipment);
         this.form.patchValue({
             id: shipment.id,
             userId: shipment.userId,

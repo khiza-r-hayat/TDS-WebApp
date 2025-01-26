@@ -1,5 +1,4 @@
 import { inject, Pipe, PipeTransform } from "@angular/core";
-import { AccountModel } from "app/shared/core/domain/models/account.model";
 import { AccountService } from "app/shared/core/domain/services/account.service";
 
 @Pipe({

@@ -1,7 +1,6 @@
 import { HttpClient } from "@angular/common/http";
-import { inject, Injectable, signal } from "@angular/core";
+import { inject, Injectable } from "@angular/core";
 import { User } from "app/core/user/user.types";
-import { AccountModel } from "app/shared/core/domain/models/account.model";
 import { map, Observable, ReplaySubject, tap } from "rxjs";
 
 @Injectable({ providedIn: "root" })

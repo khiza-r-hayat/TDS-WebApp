@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Apollo } from 'apollo-angular';
-import { ShipmentFilterModel, ShipmentModel } from 'app/shared/core/domain/models/brand.model';
+import { ShipmentFilterModel, ShipmentModel } from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentRepository } from 'app/shared/core/domain/repository/shipment.repository';
 import * as Query from 'app/shared/core/graphql/shipment.gql';
 import { ShipmentMapper } from './shipment.mapper';

@@ -1,5 +1,5 @@
 import { Mapper } from "../../../base/mapper";
-import { Role, Roles } from "app/shared/core/domain/models/account.model";
+import { Role } from "app/shared/core/domain/models/account.model";
 
 export class RoleMapper extends Mapper<Role, Role> {
   mapFrom(param: Role): Role {

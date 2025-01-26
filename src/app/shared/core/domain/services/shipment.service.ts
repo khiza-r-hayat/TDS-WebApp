@@ -3,7 +3,7 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { FilterUtils } from '../../classes/filter_utils';
 import { MessageService } from '../../classes/message.service';
 import { ShipmentHelper } from '../helpers/shipment.helper';
-import { ShipmentFilterModel, ShipmentModel } from '../models/brand.model';
+import { ShipmentFilterModel, ShipmentModel } from '../models/shipment.model';
 import { ShipmentRepository } from '../repository/shipment.repository';
 
 @Injectable({ providedIn: 'root' })

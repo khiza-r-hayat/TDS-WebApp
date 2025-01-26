@@ -26,7 +26,7 @@ import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
-import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
+import { ShipmentModel } from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 

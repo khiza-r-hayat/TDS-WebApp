@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { AccountModel, AccountUpload, UserModel } from "../models/account.model";
+import { UserModel } from "../models/account.model";
 
 export abstract class AccountRepository {
   abstract getAccounts(): Observable<any[]>;

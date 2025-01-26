@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ShipmentFilterModel, ShipmentModel } from '../models/brand.model';
+import { ShipmentFilterModel, ShipmentModel } from '../models/shipment.model';
 
 export abstract class ShipmentRepository {
     abstract getShipmentsByUserId(id: string): Observable<ShipmentModel[]>;

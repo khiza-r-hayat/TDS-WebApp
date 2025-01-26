@@ -5,11 +5,8 @@ import {
     RouterStateSnapshot,
 } from '@angular/router';
 import { UserRole } from 'app/shared/core/classes/roles';
-import { AccountModel } from 'app/shared/core/domain/models/account.model';
 import { AccountService } from 'app/shared/core/domain/services/account.service';
-import { UserSessionService } from 'app/shared/core/domain/services/session.service';
-import { LogService } from 'app/shared/logs/log.service';
-import { Observable, catchError, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 
 export const accountResolver = (
     route: ActivatedRouteSnapshot,

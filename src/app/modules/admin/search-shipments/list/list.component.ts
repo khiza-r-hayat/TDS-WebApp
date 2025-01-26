@@ -1,14 +1,15 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import {
     AfterViewInit,
     ChangeDetectorRef,
     Component,
-    computed,
     ElementRef,
     OnInit,
-    signal,
+    TemplateRef,
     ViewChild,
+    computed,
+    signal,
 } from '@angular/core';
 import {
     FormsModule,
@@ -20,6 +21,7 @@ import {
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
@@ -39,7 +41,8 @@ import {
 import {
     GeoLocationModel,
     ShipmentFilterModel,
-} from 'app/shared/core/domain/models/brand.model';
+    ShipmentModel,
+} from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 
@@ -66,14 +69,15 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         MatFormField,
         FormsModule,
         ReactiveFormsModule,
+        DecimalPipe,
     ],
     templateUrl: './list.component.html',
 })
 export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
+    @ViewChild('shipmentDetailsView') shipmentDetailsView: TemplateRef<any>;
     // dataSourceBulkImport: MatTableDataSource<any> = new MatTableDataSource();
     @ViewChild(MatPaginator) paginator: MatPaginator;
-
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('selectAll') selectAllCheckBox: MatCheckbox;
 
@@ -109,6 +113,9 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
 
     filterForm: UntypedFormGroup;
 
+    //<--------------------- Model Variables ---------------------->
+    shipmentInView = signal<ShipmentModel>(null);
+    bidRate: number = 0;
     //<--------------------- Flag Variables ---------------------->
 
     enableActions = signal<boolean>(false);
@@ -121,7 +128,8 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _formBuilder: UntypedFormBuilder
+        private _formBuilder: UntypedFormBuilder,
+        private _dialog: MatDialog
     ) {}
 
     shipments = computed(() => {
@@ -154,6 +162,21 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
 
         // Mark for check
         this._changeDetectorRef.markForCheck();
+    }
+
+    viewShipmentDetails(shipment: ShipmentModel) {
+        this.shipmentInView.set(shipment);
+        this._dialog
+            .open(this.shipmentDetailsView, {
+                width: '50vw',
+            })
+            .afterClosed()
+            .subscribe(() => {
+                this.shipmentInView.set(null);
+            });
+    }
+    closeAll() {
+        this._dialog.closeAll();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -287,6 +310,11 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
             this.dataSource.sort = this.sort;
         });
     }
+    // -----------------------------------------------------------------------------------------------------
+    // @ Save/Upload Methods
+    // -----------------------------------------------------------------------------------------------------
+
+    submitBid() {}
 
     /**
      * Track by function for ngFor loops

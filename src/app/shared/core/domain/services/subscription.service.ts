@@ -2,12 +2,10 @@ import { inject, Injectable, signal } from '@angular/core';
 import { catchError, Observable, of, tap } from 'rxjs';
 import { MessageService } from '../../classes/message.service';
 import { SubscriptionTypeMapper } from '../../data/api/subscriptions/subscription.mapper';
-import { PlanMapper } from '../../data/api/tenant/plan.mapper';
-import { Role } from '../models/account.model';
-import { Plan, Tenant } from '../models/tenant.model';
+import { Plan, Role } from '../models/account.model';
 import { SubscriptionsRepository } from '../repository/subscription.repository';
-import { UserApprovalModel } from '../models/brand.model';
-import { map } from 'lodash';
+import { UserApprovalModel } from '../models/shipment.model';
+import { RoleMapper } from '../../data/api/account/role.mapper';
 
 @Injectable({ providedIn: 'root' })
 export class SubscriptionService {
@@ -16,7 +14,7 @@ export class SubscriptionService {
     private _userApprovalRequests = signal<UserApprovalModel[]>([]);
     private _roles = signal<Role[]>([]);
     private _subscriptionTypes = signal<Plan[]>([]);
-    private planMapper = new PlanMapper();
+    private planMapper = new RoleMapper();
     private subscriptionTypeMapper = new SubscriptionTypeMapper();
 
     // private logger = inject(LogService);
@@ -61,7 +59,7 @@ export class SubscriptionService {
     // @ Get methods
     // -----------------------------------------------------------------------------------------------------
 
-    getSubscriptionsAndPlans(): Observable<Tenant[]> {
+    getSubscriptionsAndPlans(): Observable<any[]> {
         return this.api.getSubscriptionsAndPlans().pipe(
             catchError((e) => {
                 console.log('Error fetching Subscription Types And Plans', e);
@@ -92,7 +90,7 @@ export class SubscriptionService {
         );
     }
     
-    getUserApprovalRequest(userId:string): Observable<Tenant[]> {
+    getUserApprovalRequest(userId:string): Observable<any[]> {
         return this.api.getUserApprovalRequest(userId).pipe(
             catchError((e) => {
                 console.log('Error fetching User approval request', e);

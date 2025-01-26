@@ -33,11 +33,12 @@
                                 </mat-form-field>
                                 <!-- Dead Head Origin-->
                                 <mat-form-field class="fuse-mat-no-subscript w-1/3">
-                                    <input type="number" aria-label="Number" placeholder="0" matInput formControlName="odh" min="0">
+                                    <input type="number" aria-label="Number" placeholder="0" matInput
+                                        formControlName="odh" min="0">
                                 </mat-form-field>
                                 <!-- Icon -->
                                 <mat-icon matPrefix class="hidden sm:flex icon-size-5 text-white mb-5"
-                                [svgIcon]="'heroicons_outline:arrows-right-left'"></mat-icon>
+                                    [svgIcon]="'heroicons_outline:arrows-right-left'"></mat-icon>
                                 <!-- Destination -->
                                 <mat-form-field class="fuse-mat-no-subscript w-full">
                                     <mat-icon matPrefix class="hidden sm:flex icon-size-5"
@@ -47,7 +48,8 @@
                                 </mat-form-field>
                                 <!-- Dead Head Destination-->
                                 <mat-form-field class="fuse-mat-no-subscript w-1/3">
-                                    <input type="number" aria-label="Number" placeholder="0" matInput formControlName="ddh" min="0">
+                                    <input type="number" aria-label="Number" placeholder="0" matInput
+                                        formControlName="ddh" min="0">
                                 </mat-form-field>
                                 <!-- date range -->
                                 <mat-form-field class="fuse-mat-no-subscript w-full">
@@ -59,7 +61,8 @@
                                     <mat-date-range-picker #picker></mat-date-range-picker>
                                 </mat-form-field>
                                 <!-- filter button -->
-                                 <button mat-flat-button color="accent" class="px-16 mb-5" [disabled]="filterForm.invalid" (click)="applyFilter()">Filter</button>
+                                <button mat-flat-button color="accent" class="px-16 mb-5"
+                                    [disabled]="filterForm.invalid" (click)="applyFilter()">Filter</button>
                             </div>
                         </form>
                     </div>
@@ -78,9 +81,9 @@
                     <div class="p-6 flex flex-col sm:flex-row items-center justify-start">
                         <div>
                             <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
-                               {{this.shipments().length}} Results
+                                {{this.shipments().length}} Results
                             </div>
-                            
+
                         </div>
                         <!-- <div class="flex flex-row flex-wrap items-center">
                             <div class="flex flex-col sm:flex-row items-center">
@@ -161,7 +164,8 @@
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        {{ (shipment.equipmentId | fuseFindByKey:'id':equipmentTypes).name}} {{shipment.availableLength}}ft {{shipment.weight}}kg
+                                        {{ (shipment.equipmentId | fuseFindByKey:'id':equipmentTypes).name}}
+                                        {{shipment.availableLength}}ft {{shipment.weight}}kg
                                     </span>
                                 </td>
                             </ng-container>
@@ -202,13 +206,12 @@
                                 <td class="pr-2" mat-cell *matCellDef="let shipment">
                                     <div class="flex mt-2">
                                         <span class="font-medium mr-2 whitespace-nowrap">
-                                            <a [routerLinkActive]="'active'"
-                                                [routerLink]="['/search-shipments/' + shipment.id ]">
-                                                <button mat-flat-button color="primary"
-                                                    [matTooltip]="'Bid on shipment'">
-                                                    Bid
-                                                </button>
-                                            </a>
+
+                                            <button mat-icon-button [matTooltip]="'Bid on shipment'" (click)="viewShipmentDetails(shipment)">
+                                                <mat-icon class="icon-size-7"
+                                                    [svgIcon]="'heroicons_outline:eye'" color="primary"></mat-icon>
+                                            </button>
+
                                         </span>
 
                                         <!-- <span class="font-medium ml-1 whitespace-nowrap">
@@ -235,3 +238,131 @@
         </div>
     </div>
 </div>
+
+<ng-template #shipmentDetailsView>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
+        <!-- Modal Header -->
+        <div class="mb-4 border-b pb-2 flex justify-between items-center">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                Shipment Details
+            </h2>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            <!-- Origin -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Origin Address
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().originAddress }}
+                </p>
+            </div>
+
+            <!-- Destination -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Destination Address
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().destinationAddress }}
+                </p>
+            </div>
+
+            <!-- Status -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Status
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().status }}
+                </p>
+            </div>
+
+            <!-- Pickup Time -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Pickup Time
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    Earliest: {{ shipmentInView().pickupEarliest | date:'short' }}<br />
+                    Latest: {{ shipmentInView().pickupLatest | date:'short' }}
+                </p>
+            </div>
+
+            <!-- Equipment ID -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Equipment ID
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ (shipmentInView().equipmentId | fuseFindByKey:'id':equipmentTypes).name }}
+                </p>
+            </div>
+
+            <!-- Commodity -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Commodity
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().commodity }}
+                </p>
+            </div>
+
+            <!-- Rate -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Rate/KM
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().rate | number:'1.2-2' }} PKR
+                </p>
+            </div>
+
+            <!-- Comments -->
+            <div>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Comments
+                </p>
+                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {{ shipmentInView().comments || 'N/A' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Bid Input -->
+        <div class="mt-6">
+            <label for="bidRate" class="block text-sm font-medium text-gray-500 dark:text-gray-400">
+               <strong>Enter Your Bid Rate</strong>
+            </label>
+            <div class="mt-1 flex">
+                <input
+                    type="number"
+                    id="bidRate"
+                    [(ngModel)]="bidRate"
+                    min="0"
+                    [max]="shipmentInView().rate"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                    placeholder="Enter bid amount"
+                />
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="mt-6 flex justify-end space-x-3">
+            <button
+                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                (click)="closeAll()">
+                Close
+            </button>
+            <button
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
+                (click)="submitBid(bidRate)">
+                Add Bid
+            </button>
+        </div>
+    </div>
+</ng-template>
+

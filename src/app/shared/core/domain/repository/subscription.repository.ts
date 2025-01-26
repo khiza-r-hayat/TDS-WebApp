@@ -1,6 +1,5 @@
 import { Observable } from "rxjs";
-import { TenantTableModel, TenantUpload } from "../models/tenant.model";
-import { UserApprovalModel } from "../models/brand.model";
+import { UserApprovalModel } from "../models/shipment.model";
 
 export abstract class SubscriptionsRepository {
   abstract getSubscriptionsAndPlans(): Observable<any[]>;

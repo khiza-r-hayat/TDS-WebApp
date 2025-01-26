@@ -1,5 +1,5 @@
 import { ShipmentStatus, Utility } from '../../classes/utility';
-import { GeoLocationModel, ShipmentModel } from '../models/brand.model';
+import { GeoLocationModel, ShipmentModel } from '../models/shipment.model';
 
 export class ShipmentHelper {
     public static generateShipmentUploadObject(

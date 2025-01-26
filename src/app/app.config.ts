@@ -24,23 +24,11 @@ import { firstValueFrom } from 'rxjs';
 import { TranslocoHttpLoader } from './core/transloco/transloco.http-loader';
 import { provideGraphql } from './graphql.config';
 import { AccountAPI } from './shared/core/data/api/account/account.api';
-import { BrandAPI } from './shared/core/data/api/brand/brand.api';
-import { CampaignAPI } from './shared/core/data/api/campaign/campaign.api';
-import { EventAPI } from './shared/core/data/api/event/event.api';
-import { ProductAPI } from './shared/core/data/api/product/product.api';
 import { SessionAPI } from './shared/core/data/api/session/session.api';
 import { ShipmentAPI } from './shared/core/data/api/shipments/shipments.api';
-import { SponsorAPI } from './shared/core/data/api/sponsor/sponsor.api';
-import { TenantAPI } from './shared/core/data/api/tenant/tenant.api';
 import { AccountRepository } from './shared/core/domain/repository/account.repository';
-import { BrandRepository } from './shared/core/domain/repository/brand.repository';
-import { CampaignRepository } from './shared/core/domain/repository/campaign.repository';
-import { EventRepository } from './shared/core/domain/repository/event.repository';
-import { ProductRepository } from './shared/core/domain/repository/product.repository';
 import { SessionRepository } from './shared/core/domain/repository/session.repository';
 import { ShipmentRepository } from './shared/core/domain/repository/shipment.repository';
-import { SponsorRepository } from './shared/core/domain/repository/sponsor.repository';
-import { TenantRepository } from './shared/core/domain/repository/tenant.repository';
 import { SubscriptionsRepository } from './shared/core/domain/repository/subscription.repository';
 import { SubscriptionsAPI } from './shared/core/data/api/subscriptions/subscriptions.api';
 
@@ -163,32 +151,8 @@ export const appConfig: ApplicationConfig = {
             useClass: SessionAPI,
         },
         {
-            provide: EventRepository,
-            useClass: EventAPI,
-        },
-        {
-            provide: BrandRepository,
-            useClass: BrandAPI,
-        },
-        {
-            provide: ProductRepository,
-            useClass: ProductAPI,
-        },
-        {
-            provide: TenantRepository,
-            useClass: TenantAPI,
-        },
-        {
-            provide: SponsorRepository,
-            useClass: SponsorAPI,
-        },
-        {
             provide: AccountRepository,
             useClass: AccountAPI,
-        },
-        {
-            provide: CampaignRepository,
-            useClass: CampaignAPI,
         },
         {
             provide: ShipmentRepository,

@@ -1,14 +1,13 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { LogService } from 'app/shared/logs/log.service';
 import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { SessionMapper } from '../../data/api/session/session.mapper';
-import { AccountModel } from '../models/account.model';
 import {
     UserSession,
     UserSessionModel,
     UserSessionUpload,
 } from '../models/session.model';
 import { SessionRepository } from '../repository/session.repository';
+import { UserModel } from '../models/account.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserSessionService {
@@ -78,8 +77,8 @@ export class UserSessionService {
      */
     createUserSession(
         session: UserSessionUpload,
-        user: AccountModel,
-        impersonatedAs?: AccountModel,
+        user: UserModel,
+        impersonatedAs?: UserModel,
         impersonatedId?: string
     ): Observable<any> {
         return this.api.createUserSession(session).pipe(

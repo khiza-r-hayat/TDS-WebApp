@@ -22,15 +22,11 @@ import { Router } from '@angular/router';
 import { CONSTANTS, Utility } from 'app/shared/core/classes/utility';
 import { AccountHelper } from 'app/shared/core/domain/helpers/account.helper';
 import {
-    AccountModel,
-    Roles,
+    Role,
     UserModel,
 } from 'app/shared/core/domain/models/account.model';
-import { Sponsor } from 'app/shared/core/domain/models/sponsor.model';
 import { AccountService } from 'app/shared/core/domain/services/account.service';
 import { UserSessionService } from 'app/shared/core/domain/services/session.service';
-import { SponsorService } from 'app/shared/core/domain/services/sponsor.service';
-import { TenantService } from 'app/shared/core/domain/services/tenant.service';
 import { LogService } from 'app/shared/logs/log.service';
 import { AccountListComponent } from '../list/list.component';
 
@@ -74,7 +70,7 @@ export class AccountDetailComponent {
 
     //<-------------------------- Data --------------------------->
 
-    filteredRoles = signal<Roles[]>([]);
+    filteredRoles = signal<Role[]>([]);
     filteredCompanies = signal<{ id: string; title: string }[]>([]);
 
     //   private _tagsPanelOverlayRef: OverlayRef;
@@ -84,8 +80,6 @@ export class AccountDetailComponent {
         private _accountListComponent: AccountListComponent,
         private _accountService: AccountService,
         private _sessionService: UserSessionService,
-        private _tenantService: TenantService,
-        private _sponsorService: SponsorService,
         private _formBuilder: UntypedFormBuilder,
         private _router: Router,
         private logger: LogService
@@ -177,14 +171,14 @@ export class AccountDetailComponent {
         });
     }
 
-    patchCompany(account: AccountModel) {
-        let company;
-        if (account.companyRoles && account.companyRoles.length) {
-            company = account.companyRoles[0].sponsorCompany;
-        } else if (account.tenantRoles && account.tenantRoles.length) {
-            company = account.tenantRoles[0].tenant;
-        }
-        return company;
+    patchCompany(account: UserModel) {
+        // let company;
+        // if (account.companyRoles && account.companyRoles.length) {
+        //     company = account.companyRoles[0].sponsorCompany;
+        // } else if (account.tenantRoles && account.tenantRoles.length) {
+        //     company = account.tenantRoles[0].tenant;
+        // }
+        // return company;
     }
 
     generatePassWord() {
@@ -230,28 +224,6 @@ export class AccountDetailComponent {
         // }
     }
 
-    setSponsorList(user: AccountModel) {
-        this._sponsorService
-            .getSponsorsByTenantId(user.tenantRoles[0].tenantId)
-            .subscribe((res: Sponsor[]) => {
-                let sponsors = this._sponsorService
-                    .sponsors()
-                    .map((s) =>
-                        Object.assign({}, { id: s.id, title: s.title })
-                    );
-                this.filteredCompanies.set(sponsors);
-            });
-    }
-
-    setTenantList() {
-        this._tenantService.getTenants().subscribe((res) => {
-            let tenants = this._tenantService
-                .tenants()
-                .map((t) => Object.assign({}, { id: t.id, title: t.title }));
-            this.filteredCompanies.set(tenants);
-        });
-    }
-
     roleChange(value) {
         // let user = this._sessionService.session().user;
         // this.accountForm.patchValue({ company: {} });
@@ -279,8 +251,8 @@ export class AccountDetailComponent {
     // @ Data Transform methods
     // -----------------------------------------------------------------------------------------------------
 
-    displayRole(role: Roles): string {
-        return role && role.name ? role.name : '';
+    displayRole(role: Role): string {
+        return role && role.title ? role.title : '';
     }
 
     displayCompany(company: any): string {

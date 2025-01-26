@@ -32,7 +32,6 @@ import { ConfirmationDialogs } from 'app/shared/core/classes/confirmation_dialog
 import { UserRole } from 'app/shared/core/classes/roles';
 import { CONSTANTS } from 'app/shared/core/classes/utility';
 import { UserModel } from 'app/shared/core/domain/models/account.model';
-import { UserApprovalModel } from 'app/shared/core/domain/models/brand.model';
 import { AccountService } from 'app/shared/core/domain/services/account.service';
 
 @Component({

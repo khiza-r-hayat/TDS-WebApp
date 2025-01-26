@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Apollo } from 'apollo-angular';
-import { UserApprovalModel } from 'app/shared/core/domain/models/brand.model';
+import { UserApprovalModel } from 'app/shared/core/domain/models/shipment.model';
 import { SubscriptionsRepository } from 'app/shared/core/domain/repository/subscription.repository';
 import * as Query from 'app/shared/core/graphql/subscriptions.gql';
 import { map } from 'rxjs';

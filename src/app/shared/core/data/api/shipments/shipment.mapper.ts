@@ -1,7 +1,7 @@
 import {
     ShipmentModel,
     ShipmentResponse,
-} from 'app/shared/core/domain/models/brand.model';
+} from 'app/shared/core/domain/models/shipment.model';
 import { Mapper } from '../../../base/mapper';
 
 export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {

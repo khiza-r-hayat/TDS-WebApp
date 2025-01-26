@@ -21,7 +21,7 @@ import { User } from 'app/core/user/user.types';
 import { FirebaseService } from 'app/shared/core/classes/firebase_utils';
 import { UserRole } from 'app/shared/core/classes/roles';
 import { Utility } from 'app/shared/core/classes/utility';
-import { UserApprovalModel } from 'app/shared/core/domain/models/brand.model';
+import { UserApprovalModel } from 'app/shared/core/domain/models/shipment.model';
 import { SubscriptionService } from 'app/shared/core/domain/services/subscription.service';
 
 @Component({
