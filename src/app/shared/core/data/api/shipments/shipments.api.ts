@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Apollo } from 'apollo-angular';
-import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
+import { ShipmentFilterModel, ShipmentModel } from 'app/shared/core/domain/models/brand.model';
 import { ShipmentRepository } from 'app/shared/core/domain/repository/shipment.repository';
 import * as Query from 'app/shared/core/graphql/shipment.gql';
 import { ShipmentMapper } from './shipment.mapper';
@@ -19,6 +19,27 @@ export class ShipmentAPI implements ShipmentRepository {
         return this.apollo
             .subscribe<ShipmentModel>({
                 query: Query.GetShipmentsQL,
+            })
+            .pipe(
+                map((result) => result.data['shipments']),
+                map((events) =>
+                    events.map((event) => this.mapper.mapFrom(event))
+                )
+            );
+    }
+    
+    getFilteredShipments(filter:ShipmentFilterModel): Observable<ShipmentModel[]> {
+        return this.apollo
+            .subscribe<ShipmentModel>({
+                query: Query.FilterShipmentsQL,
+                variables:{
+                    "origin": filter.origin,
+                      "destination": filter.destination,
+                      "odh": filter.odh,
+                      "ddh": filter.ddh,
+                      "start": filter.start,
+                      "end": filter.end
+                }
             })
             .pipe(
                 map((result) => result.data['shipments']),

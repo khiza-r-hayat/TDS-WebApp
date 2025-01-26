@@ -4,8 +4,10 @@ export const ShipmentQL = gql`
     fragment ShipmentQL on shipments {
         id
         userId
-        originId
-        destinationId
+        origin
+        originAddress
+        destination
+        destinationAddress
         pickupEarliest
         pickupLatest
         pickupHours
@@ -20,5 +22,7 @@ export const ShipmentQL = gql`
         rate
         createdAt
         updatedAt
+        status
+        open
     }
 `;

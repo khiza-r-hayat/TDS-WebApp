@@ -444,6 +444,14 @@ export enum StockTypeNames {
   Selling_Stock = "selling",
 }
 
+export enum ShipmentStatus {
+  POSTED = "POSTED",
+  BOOKED = "BOOKED",
+  SHIPPED = "SHIPPED",
+  ON_ROAD = "ON ROAD",
+  DELIVERED = "DELIVERED",
+}
+
 export class CONSTANTS {
   // Sessions
   static readonly LOGGED_IN_USER = "aXNMb2dnZWRJbg";

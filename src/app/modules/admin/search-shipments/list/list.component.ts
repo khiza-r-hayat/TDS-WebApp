@@ -1,15 +1,26 @@
 import { SelectionModel } from '@angular/cdk/collections';
 import { DatePipe } from '@angular/common';
 import {
+    AfterViewInit,
     ChangeDetectorRef,
     Component,
     computed,
+    ElementRef,
+    OnInit,
     signal,
     ViewChild,
 } from '@angular/core';
+import {
+    FormsModule,
+    ReactiveFormsModule,
+    UntypedFormBuilder,
+    UntypedFormGroup,
+    Validators,
+} from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
-import { MatFormField } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatFormField, MatFormFieldModule } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
@@ -21,12 +32,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FuseFindByKeyPipe } from '@fuse/pipes/find-by-key/find-by-key.pipe';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ConfirmationDialogs } from 'app/shared/core/classes/confirmation_dialogs';
-import { CONSTANTS } from 'app/shared/core/classes/utility';
 import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
-import { ShipmentModel } from 'app/shared/core/domain/models/brand.model';
+import {
+    GeoLocationModel,
+    ShipmentFilterModel,
+} from 'app/shared/core/domain/models/brand.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 
@@ -42,17 +55,21 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         MatIcon,
         MatInput,
         MatButton,
-        MatCheckbox,
         MatPaginator,
         RouterLink,
         DatePipe,
         TranslocoModule,
         FuseFindByKeyPipe,
         ShipmentAgePipe,
+        MatFormFieldModule,
+        MatDatepickerModule,
+        MatFormField,
+        FormsModule,
+        ReactiveFormsModule,
     ],
     templateUrl: './list.component.html',
 })
-export class ShipmentListComponent {
+export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     // dataSourceBulkImport: MatTableDataSource<any> = new MatTableDataSource();
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -60,22 +77,29 @@ export class ShipmentListComponent {
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('selectAll') selectAllCheckBox: MatCheckbox;
 
+    @ViewChild('originInput') originInput!: ElementRef;
+    @ViewChild('destinationInput') destinationInput!: ElementRef;
+    originAutocomplete: google.maps.places.Autocomplete | undefined;
+    destinationAutocomplete: google.maps.places.Autocomplete | undefined;
+
+    geoOrigin: GeoLocationModel | undefined;
+    geoDestination: GeoLocationModel | undefined;
+
     //<--------------------- Table Variables ---------------------->
     dataSource: MatTableDataSource<any>;
 
     drawerMode: 'side' | 'over';
     itemsPerPage = 20;
     tableColumns: string[] = [
-        'select',
-        'action',
         'age',
         'rate',
         'pickUp',
         'trip',
         'ref',
         'equipment',
+        // 'bids',
         'status',
-        'bids',
+        'actions',
     ];
 
     selection = new SelectionModel<any>(true, []);
@@ -83,10 +107,12 @@ export class ShipmentListComponent {
     locations = pakistan_locations;
     equipmentTypes = equipmentTypes;
 
+    filterForm: UntypedFormGroup;
+
     //<--------------------- Flag Variables ---------------------->
 
     enableActions = signal<boolean>(false);
-    // searchRoute = signal<boolean>(false);
+    searchRoute = signal<boolean>(false);
     searchText = signal<string>('');
 
     constructor(
@@ -94,7 +120,8 @@ export class ShipmentListComponent {
         private _confirmationDialogs: ConfirmationDialogs,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        private _changeDetectorRef: ChangeDetectorRef
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _formBuilder: UntypedFormBuilder
     ) {}
 
     shipments = computed(() => {
@@ -104,6 +131,17 @@ export class ShipmentListComponent {
         }
         return data ?? [];
     });
+
+    initializeForm() {
+        this.filterForm = this._formBuilder.group({
+            origin: ['', [Validators.required]],
+            destination: ['', [Validators.required]],
+            odh: ['', [Validators.required]],
+            ddh: ['', [Validators.required]],
+            start: ['', [Validators.required]],
+            end: ['', [Validators.required]],
+        });
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Drawer Methods
@@ -127,13 +165,9 @@ export class ShipmentListComponent {
         //     // console.log(data);
         //     this.searchRoute.set(data['search']);
         // });
+        this.initializeForm();
 
         this.dataSource = new MatTableDataSource(this.shipments());
-    }
-
-    ngAfterViewInit() {
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
     }
 
     // ngOnDestroy(): void {
@@ -142,51 +176,90 @@ export class ShipmentListComponent {
     //   this._unsubscribeAll.complete();
     // }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Selection Methods
-    // -----------------------------------------------------------------------------------------------------
-
-    toggleActions() {
-        this.enableActions.update((s) => !s);
-    }
-
-    masterToggle(event) {
-        if (this.selection.selected.some((e) => e)) {
-            this.clearSelection();
-        } else {
-            if (event.checked) {
-                this.selectAll();
+    ngAfterViewInit(): void {
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+        setTimeout(() => {
+            if (window.google?.maps?.places) {
+                this.initOriginAutocomplete();
+                this.initDestinationAutocomplete();
             } else {
-                event.checked = false;
+                console.error('Google Maps library not loaded');
             }
-        }
+        }, 2000);
+    }
+    // -----------------------------------------------------------------------------------------------------
+    // @ Location Methods
+    // -----------------------------------------------------------------------------------------------------
+
+    private initOriginAutocomplete(): void {
+        if (!this.originInput?.nativeElement) return;
+
+        this.originAutocomplete = new google.maps.places.Autocomplete(
+            this.originInput.nativeElement,
+            {
+                types: ['geocode'],
+                fields: ['place_id', 'geometry', 'formatted_address', 'name'],
+            }
+        );
+
+        this.originAutocomplete.addListener('place_changed', () => {
+            const place = this.originAutocomplete?.getPlace();
+            if (place?.geometry) {
+                const location = place.geometry.location;
+                const lat = location?.lat();
+                const lng = location?.lng();
+                const address = place.formatted_address;
+
+                this.filterForm.patchValue({
+                    origin: address,
+                });
+
+                // false boolean for destination object
+                this.assignLocation(lat, lng, false);
+            }
+        });
     }
 
-    selectRow(event) {
-        event.stopPropagation();
-        if (!this.selection.selected.filter((e) => e).length) {
-            this.selectAllCheckBox.indeterminate = false;
-            this.toggleActions();
+    private initDestinationAutocomplete(): void {
+        if (!this.destinationInput?.nativeElement) return;
+
+        this.destinationAutocomplete = new google.maps.places.Autocomplete(
+            this.destinationInput.nativeElement,
+            {
+                types: ['geocode'],
+                fields: ['place_id', 'geometry', 'formatted_address', 'name'],
+            }
+        );
+
+        this.destinationAutocomplete.addListener('place_changed', () => {
+            const place = this.destinationAutocomplete?.getPlace();
+            if (place?.geometry) {
+                const location = place.geometry.location;
+                const lat = location?.lat();
+                const lng = location?.lng();
+                const address = place.formatted_address;
+
+                this.filterForm.patchValue({
+                    destination: address,
+                });
+
+                // true boolean for destination object
+                this.assignLocation(lat, lng, true);
+            }
+        });
+    }
+
+    assignLocation(lat: number, lng: number, isDestination: boolean) {
+        const locationData: GeoLocationModel = {
+            type: 'Point',
+            coordinates: [lng, lat],
+        };
+        if (isDestination) {
+            this.geoDestination = locationData;
         } else {
-            this.selectAllCheckBox.indeterminate = true;
-            this.enableActions.set(true);
+            this.geoOrigin = locationData;
         }
-    }
-
-    selectAll() {
-        this.selectAllCheckBox.checked = true;
-        this.shipments()
-        .filter((s) => s.open)
-        .forEach((row) => this.selection.select(row));
-        if(this.selection.selected.length) {
-            this.toggleActions();
-        }
-    }
-
-    clearSelection() {
-        this.selectAllCheckBox.checked = false;
-        this.toggleActions();
-        this.selection.clear();
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -197,23 +270,22 @@ export class ShipmentListComponent {
         this.searchText.update(() => text);
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Delete Methods
-    // -----------------------------------------------------------------------------------------------------
+    applyFilter() {
+        const form = this.filterForm.getRawValue();
+        const filter: ShipmentFilterModel = {
+            origin: this.geoOrigin,
+            destination: this.geoDestination,
+            odh: form.odh,
+            ddh: form.ddh,
+            start: form.start,
+            end: form.end,
+        };
 
-    remove(shipment?: ShipmentModel) {
-        const multi: boolean = shipment === null || shipment === undefined;
-        this._confirmationDialogs
-            .confirmDelete('Shipment', multi)
-            .afterClosed()
-            .subscribe((result) => {
-                if (result === CONSTANTS.CONFIRMED) {
-                    this._shipmentService.removeSelectedShipments(
-                        shipment ? [shipment] : this.selection.selected
-                    );
-                    this.clearSelection();
-                }
-            });
+        this._shipmentService.getFilteredShipments(filter).subscribe((data) => {
+            this.dataSource = new MatTableDataSource(data);
+            this.dataSource.paginator = this.paginator;
+            this.dataSource.sort = this.sort;
+        });
     }
 
     /**

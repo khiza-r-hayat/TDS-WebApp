@@ -18,20 +18,52 @@
             <div class="flex flex-col sm:flex-row flex-auto sm:items-center min-w-0 my-6 mx-8 sm:my-12 md:my-12">
                 <!-- Title -->
                 <div class="flex flex-auto items-center min-w-0">
-                    <div class="flex flex-col min-w-0 ">
+                    <div class="flex flex-col w-full">
                         <ng-container *transloco="let t">
-                            <div class="text-4xl font-extrabold text-white tracking-tight">My Shipments</div>
+                            <div class="text-4xl font-extrabold text-white tracking-tight">Shipments</div>
                         </ng-container>
+                        <form [formGroup]="filterForm" class="w-full">
+                            <div class="flex flex-col sm:flex-row items-center w-full space-x-2">
+                                <!-- Origin -->
+                                <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                        [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                                    <input type="text" placeholder="Origin" aria-label="Number" matInput
+                                        formControlName="origin" #originInput>
+                                </mat-form-field>
+                                <!-- Dead Head Origin-->
+                                <mat-form-field class="fuse-mat-no-subscript w-1/3">
+                                    <input type="number" aria-label="Number" placeholder="0" matInput formControlName="odh" min="0">
+                                </mat-form-field>
+                                <!-- Icon -->
+                                <mat-icon matPrefix class="hidden sm:flex icon-size-5 text-white mb-5"
+                                [svgIcon]="'heroicons_outline:arrows-right-left'"></mat-icon>
+                                <!-- Destination -->
+                                <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <mat-icon matPrefix class="hidden sm:flex icon-size-5"
+                                        [svgIcon]="'heroicons_solid:map-pin'"></mat-icon>
+                                    <input type="text" placeholder="Destination" aria-label="Number" matInput
+                                        formControlName="destination" #destinationInput>
+                                </mat-form-field>
+                                <!-- Dead Head Destination-->
+                                <mat-form-field class="fuse-mat-no-subscript w-1/3">
+                                    <input type="number" aria-label="Number" placeholder="0" matInput formControlName="ddh" min="0">
+                                </mat-form-field>
+                                <!-- date range -->
+                                <mat-form-field class="fuse-mat-no-subscript w-full">
+                                    <mat-date-range-input [rangePicker]="picker">
+                                        <input matStartDate formControlName="start" placeholder="Start date">
+                                        <input matEndDate formControlName="end" placeholder="End date">
+                                    </mat-date-range-input>
+                                    <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                    <mat-date-range-picker #picker></mat-date-range-picker>
+                                </mat-form-field>
+                                <!-- filter button -->
+                                 <button mat-flat-button color="accent" class="px-16 mb-5" [disabled]="filterForm.invalid" (click)="applyFilter()">Filter</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-
-                <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3">
-                    <button class="bg-accent" mat-flat-button [routerLink]="['./add']" [color]="'accent'">
-                        <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:plus-circle'"></mat-icon>
-                        <span class="ml-2">Post Shipment</span>
-                    </button>
-                </div>
-
 
             </div>
 
@@ -43,15 +75,14 @@
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 w-full mt-8">
                 <div class="xl:col-span-2 flex flex-col flex-auto bg-card shadow rounded-2xl overflow-hidden">
                     <!-- header row -->
-                    <div class="p-6 flex flex-col sm:flex-row items-center justify-between">
+                    <div class="p-6 flex flex-col sm:flex-row items-center justify-start">
                         <div>
                             <div class="mr-4 text-lg font-medium tracking-tight leading-6 truncate">
-                                Shipments
+                               {{this.shipments().length}} Results
                             </div>
-                            <div class="text-secondary font-medium">Total {{this.shipments().length}}
-                            </div>
+                            
                         </div>
-                        <div class="flex flex-row flex-wrap items-center">
+                        <!-- <div class="flex flex-row flex-wrap items-center">
                             <div class="flex flex-col sm:flex-row items-center">
                                 <div class="flex flex-col items-start">
                                     <mat-form-field
@@ -64,71 +95,15 @@
 
                                 </div>
                             </div>
-                            @if(this.selection.selected.length> 0){
-                            <div class="max-w-32 pb-4">
-                                <span>
-                                    <span
-                                        class="ml-2 px-4 py-2 font-semibold rounded-full flex bg-slate-300 text-sky-800">{{this.selection.selected.length}}
-                                        Selected</span>
-                                </span>
-                            </div>
-                            }
                         </div>
-                        <div class="flex items-center mt-6 sm:mt-0 sm:ml-2 space-x-3 max-w-60">
-                            <button [disabled]="!enableActions()" class="hidden sm:inline-flex ml-3" mat-flat-button
-                                [color]="'primary'" [matMenuTriggerFor]="impressionsMenu">
-                                <span>Actions</span>
-                                <mat-icon class="icon-size-5"
-                                    [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
-                            </button>
-                            <mat-menu class="overflow-hidden max-w-64" #impressionsMenu="matMenu">
-                                <button (click)="remove()" class="hidden sm:inline-flex " mat-flat-button>
-                                    <mat-icon class="icon-size-5" [svgIcon]="'heroicons_solid:trash'"></mat-icon>
-                                    <span class="ml-2">Delete Selected</span>
-                                </button>
-                            </mat-menu>
-
-                            <div class="sm:hidden">
-                                <button [matMenuTriggerFor]="actionsMenu" mat-icon-button>
-                                    <mat-icon [svgIcon]="'heroicons_outline:ellipsis-vertical'"></mat-icon>
-                                </button>
-                                <mat-menu #actionsMenu="matMenu">
-
-                                    <!-- <button (click)="exportToExcel()" mat-menu-item>
-                                        Export Selected
-                                    </button> -->
-                                    <button (click)="remove()" mat-menu-item>
-                                        Delete Selected
-                                    </button>
-
-                                </mat-menu>
-                            </div>
-
-                        </div>
+                        <div></div> -->
 
                     </div>
                     <!-- Table -->
                     <div class="flex flex-col flex-auto mx-6 overflow-x-auto">
-                        <table class="w-full bg-transparent overflow-y-visible" mat-table [dataSource]="dataSource"
+                        <table class="w-full bg-transparent overflow-y-visible px-8" mat-table [dataSource]="dataSource"
                             [trackBy]="trackByFn" matSort>
 
-                            <ng-container matColumnDef="select">
-                                <th class="pmt-header" mat-header-cell *matHeaderCellDef>
-                                    @if(shipments().length){
-                                    <mat-checkbox #selectAll (change)="masterToggle($event)"></mat-checkbox>
-                                    }
-                                </th>
-                                <td mat-cell *matCellDef="let shipment">
-                                    @if(shipment.open){
-                                    <span class="pr-2 whitespace-nowrap">
-                                        <mat-checkbox (click)="selectRow($event)"
-                                            (change)="$event? selection.toggle(shipment): null"
-                                            [checked]="selection.isSelected(shipment)">
-                                        </mat-checkbox>
-                                    </span>
-                                    }
-                                </td>
-                            </ng-container>
                             <ng-container matColumnDef="age">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                     Age
@@ -186,14 +161,14 @@
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        {{ (shipment.equipmentId | fuseFindByKey:'id':equipmentTypes).name}}
+                                        {{ (shipment.equipmentId | fuseFindByKey:'id':equipmentTypes).name}} {{shipment.availableLength}}ft {{shipment.weight}}kg
                                     </span>
                                 </td>
                             </ng-container>
 
                             <ng-container matColumnDef="rate">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
-                                    Rate
+                                    Rate/KM
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
@@ -201,16 +176,15 @@
                                     </span>
                                 </td>
                             </ng-container>
-                            <ng-container matColumnDef="bids">
+                            <!-- <ng-container matColumnDef="bids">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                     Bids
                                 </th>
                                 <td class="px-2" mat-cell *matCellDef="let shipment">
                                     <span class="pr-6 whitespace-nowrap">
-                                        <mat-icon [svgIcon]="'heroicons_outline:eye'" color="primary"></mat-icon>
                                     </span>
                                 </td>
-                            </ng-container>
+                            </ng-container> -->
                             <ng-container matColumnDef="status">
                                 <th class="px-2 mt-header" mat-header-cell mat-sort-header *matHeaderCellDef>
                                     Status
@@ -221,34 +195,32 @@
                                     </span>
                                 </td>
                             </ng-container>
-
-                            <ng-container matColumnDef="action">
+                            <ng-container matColumnDef="actions">
                                 <th class="mt-header" mat-header-cell *matHeaderCellDef>
                                     Action
                                 </th>
                                 <td class="pr-2" mat-cell *matCellDef="let shipment">
-                                    @if(shipment.open){
                                     <div class="flex mt-2">
                                         <span class="font-medium mr-2 whitespace-nowrap">
                                             <a [routerLinkActive]="'active'"
-                                                [routerLink]="['/shipments/' + shipment.id ]">
-                                                <button [matTooltip]="'Edit'">
-                                                    <mat-icon [svgIcon]="'heroicons_outline:pencil'"
-                                                        color="primary"></mat-icon>
+                                                [routerLink]="['/search-shipments/' + shipment.id ]">
+                                                <button mat-flat-button color="primary"
+                                                    [matTooltip]="'Bid on shipment'">
+                                                    Bid
                                                 </button>
                                             </a>
                                         </span>
 
-                                        <span class="font-medium ml-1 whitespace-nowrap">
+                                        <!-- <span class="font-medium ml-1 whitespace-nowrap">
                                             <button (click)="remove(shipment)" [matTooltip]="'Remove Tenant'">
                                                 <mat-icon class="icon-size-7" [svgIcon]="'heroicons_solid:trash'"
                                                     color="warn"></mat-icon>
                                             </button>
-                                        </span>
+                                        </span> -->
                                     </div>
-                                    }
                                 </td>
                             </ng-container>
+
                             <ng-container>
                                 <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
                                 <tr class="order-row h-16" mat-row *matRowDef="let row; columns: tableColumns;">

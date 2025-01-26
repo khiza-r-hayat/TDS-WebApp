@@ -5,12 +5,14 @@ import {
 import { Mapper } from '../../../base/mapper';
 
 export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
-    mapFrom(param: ShipmentResponse): any {
+    mapFrom(param: ShipmentResponse): ShipmentModel {
         return {
             id: param.id,
             userId: param.userId,
-            originId: param.originId,
-            destinationId: param.destinationId,
+            origin: param.origin,
+            originAddress: param.originAddress,
+            destination:param.destination,
+            destinationAddress: param.destinationAddress,
             pickupEarliest: param.pickupEarliest,
             pickupLatest: param.pickupLatest,
             pickupHours: param.pickupHours,
@@ -25,6 +27,8 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             rate: param.rate,
             createdAt: param.createdAt,
             updatedAt: param.updatedAt,
+            open: param.open,
+            status: param.status,
         };
     }
 
@@ -32,8 +36,10 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
         return {
             id: param.id,
             userId: param.userId,
-            originId: param.originId,
-            destinationId: param.destinationId,
+            origin: param.origin,
+            originAddress: param.originAddress,
+            destination:param.destination,
+            destinationAddress: param.destinationAddress,
             pickupEarliest: param.pickupEarliest,
             pickupLatest: param.pickupLatest,
             pickupHours: param.pickupHours,
@@ -48,6 +54,8 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             rate: param.rate,
             createdAt: param.createdAt,
             updatedAt: param.updatedAt,
+            open: param.open,
+            status: param.status,
         };
     }
 }

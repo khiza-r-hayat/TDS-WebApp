@@ -1,21 +1,29 @@
-import { Utility } from '../../classes/utility';
-import { ShipmentModel } from '../models/brand.model';
+import { ShipmentStatus, Utility } from '../../classes/utility';
+import { GeoLocationModel, ShipmentModel } from '../models/brand.model';
 
 export class ShipmentHelper {
     public static generateShipmentUploadObject(
         data: any,
         shipmentId: string,
-        userId: string
+        userId: string,
+        origin: GeoLocationModel,
+        destination: GeoLocationModel
     ): ShipmentModel {
         return {
             id: shipmentId,
             userId: userId,
-            originId: data.origin,
-            destinationId: data.destination,
+            originAddress: data.origin,
+            destinationAddress: data.destination,
             pickupEarliest: new Date(Utility.formatDate(data.pickupEarliest)),
             pickupLatest: new Date(Utility.formatDate(data.pickupLatest)),
-            pickupHours: data.pickupHours,
-            dropoffHours: data.dropoffHours,
+            pickupHours:
+                data.pickupHours && data.pickupHours !== ''
+                    ? data.pickupHours
+                    : 0,
+            dropoffHours:
+                data.dropoffHours && data.dropoffHours !== ''
+                    ? data.dropoffHours
+                    : 0,
             equipmentId: data.equipment,
             availableLength: data.availableLength,
             weight: data.weight,
@@ -23,7 +31,11 @@ export class ShipmentHelper {
             commodity: data.commodity,
             refId: data.refId,
             contact: data.contact,
-            rate: data.rate,
+            rate: parseInt(data.rate),
+            origin: origin,
+            destination: destination,
+            status: ShipmentStatus.POSTED,
+            open: true,
         };
     }
 
@@ -31,8 +43,8 @@ export class ShipmentHelper {
         return {
             id: data.id,
             userId: data.userId,
-            originId: data.originId,
-            destinationId: data.destinationId,
+            originAddress: data.originAddress,
+            destinationAddress: data.destinationAddress,
             pickupEarliest: data.pickupEarliest,
             pickupLatest: data.pickupLatest,
             pickupHours: data.pickupHours,
@@ -45,6 +57,10 @@ export class ShipmentHelper {
             refId: data.refId,
             contact: data.contact,
             rate: data.rate,
+            origin: data.origin,
+            destination: data.destination,
+            open: data.open,
+            status: data.status,
         };
     }
 }

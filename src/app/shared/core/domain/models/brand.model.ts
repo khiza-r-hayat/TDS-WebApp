@@ -13,16 +13,39 @@ export interface UserApprovalModel {
     orgName: string;
     roleId: number;
     approved: boolean;
-    mcNo:string;
-    w9FileUrl:string;
-    insuranceFileUrl:string;
+    mcNo: string;
+    w9FileUrl: string;
+    insuranceFileUrl: string;
+}
+
+
+export interface LocationModel {
+    location: GeoLocationModel;
+}
+
+export interface ShipmentFilterModel {
+    origin: GeoLocationModel;
+    destination: GeoLocationModel;
+    odh: number;
+    ddh: number;
+    start: Date;
+    end: Date;
+}
+
+export interface GeoLocationModel {
+    type: string; //'Point'
+    coordinates: [number, number]; //longitude, latitude
 }
 
 export interface ShipmentModel {
     id: string;
     userId: string;
-    originId: string;
-    destinationId: string;
+    origin: GeoLocationModel;
+    originAddress: string;
+    destination: GeoLocationModel;
+    destinationAddress: string;
+    status: string;
+    open: boolean;
     pickupEarliest: Date;
     pickupLatest: Date;
     pickupHours: number;
@@ -34,7 +57,7 @@ export interface ShipmentModel {
     commodity: string;
     refId: string;
     contact: string;
-    rate: string;
+    rate: number;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -42,8 +65,12 @@ export interface ShipmentModel {
 export interface ShipmentResponse {
     id: any;
     userId: any;
-    originId: any;
-    destinationId: any;
+    origin: GeoLocationModel;
+    originAddress: string;
+    destination: GeoLocationModel;
+    destinationAddress: string;
+    status: any;
+    open: any;
     pickupEarliest: any;
     pickupLatest: any;
     pickupHours: any;

@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { ShipmentDetailComponent } from './detail/detail.component';
 import { ShipmentListComponent } from './list/list.component';
 import { ShipmentsComponent } from './shipments.component';
-import { allShipmentsResolver, myShipmentsResolver, shipmentResolver } from './shipments.resolver';
+import { myShipmentsResolver, shipmentResolver } from './shipments.resolver';
 
 export default [
     {
@@ -18,17 +18,6 @@ export default [
                 },
                 data: {
                     search: false,
-                }
-            },
-            {
-                path: 'search',
-                pathMatch: 'full',
-                component: ShipmentListComponent,
-                resolve: {
-                    myLoads: allShipmentsResolver,
-                },
-                data: {
-                    search: true,
                 }
             },
             {

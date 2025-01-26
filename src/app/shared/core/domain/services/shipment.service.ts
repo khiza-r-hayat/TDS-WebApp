@@ -3,7 +3,7 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { FilterUtils } from '../../classes/filter_utils';
 import { MessageService } from '../../classes/message.service';
 import { ShipmentHelper } from '../helpers/shipment.helper';
-import { ShipmentModel } from '../models/brand.model';
+import { ShipmentFilterModel, ShipmentModel } from '../models/brand.model';
 import { ShipmentRepository } from '../repository/shipment.repository';
 
 @Injectable({ providedIn: 'root' })
@@ -86,6 +86,21 @@ export class ShipmentService {
 
     filterShipments(query: string): ShipmentModel[] {
         return FilterUtils.filterArrayByQuery(this.shipments() ?? [], query);
+    }
+
+    getFilteredShipments(filter:ShipmentFilterModel): Observable<ShipmentModel[]> {
+        return this.api.getFilteredShipments(filter).pipe(
+            catchError((e) => {
+                console.log('Error fetching shipments!', e);
+                this.messageService.errorMessage(
+                    'Failed to fetch shipments!'
+                );
+                return of(null);
+            }),
+            tap((response: any) => {
+                this._shipments.set(response);
+            })
+        );
     }
 
     //------------------------------------------------------

@@ -31,6 +31,11 @@ const roleAcess = [
         active: true,
     },
     {
+        route: 'search-shipments',
+        roles: [UserRole.SUPER_ADMINISTRATOR, UserRole.SHIPMENT_ADMIN,UserRole.OPERATOR_ADMIN],
+        active: true,
+    },
+    {
         route: 'reports',
         roles: [
             UserRole.SUPER_ADMINISTRATOR,

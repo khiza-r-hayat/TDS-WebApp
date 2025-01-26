@@ -35,20 +35,15 @@ import { Utility } from 'app/shared/core/classes/utility';
 import {
     EquipmentType,
     equipmentTypes,
-    LocalLocation,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
 import { ShipmentHelper } from 'app/shared/core/domain/helpers/shipment.helper';
-import {
-    GeoLocationModel,
-    ShipmentModel,
-} from 'app/shared/core/domain/models/brand.model';
+import { GeoLocationModel, ShipmentModel } from 'app/shared/core/domain/models/brand.model';
 import { BrandService } from 'app/shared/core/domain/services/brand.service';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
-import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-detail',
+    selector: 'app-bid',
     standalone: true,
     imports: [
         MatButtonModule,
@@ -71,7 +66,7 @@ import { Observable } from 'rxjs';
     ],
     templateUrl: './detail.component.html',
 })
-export class ShipmentDetailComponent implements OnInit, AfterViewInit {
+export class ShipmentBidComponent implements OnInit, AfterViewInit {
     @ViewChild('originInput') originInput!: ElementRef;
     @ViewChild('destinationInput') destinationInput!: ElementRef;
     originAutocomplete: google.maps.places.Autocomplete | undefined;
@@ -105,9 +100,6 @@ export class ShipmentDetailComponent implements OnInit, AfterViewInit {
         private _snackbar: MatSnackBar
         // private logger: LogService
     ) {}
-
-    originLocations$!: Observable<LocalLocation[]>;
-    destinationLocations$!: Observable<LocalLocation[]>;
     equipmentTypes = signal<EquipmentType[]>(equipmentTypes);
 
     // -----------------------------------------------------------------------------------------------------
@@ -266,7 +258,7 @@ export class ShipmentDetailComponent implements OnInit, AfterViewInit {
     onSubmit(event: Event): void {
         event.preventDefault(); // Prevent form submission
         // You can handle other logic here if needed
-      }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Form Modification Methods

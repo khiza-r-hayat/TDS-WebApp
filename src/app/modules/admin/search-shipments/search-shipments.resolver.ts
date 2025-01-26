@@ -11,6 +11,65 @@ import { ShipmentService } from 'app/shared/core/domain/services/shipment.servic
 import { environment } from 'environments/environment';
 import { catchError, throwError } from 'rxjs';
 
+export const brandResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const service = inject(BrandService);
+    // const logger = inject(LogService);
+    const router = inject(Router);
+
+    return service.getBrandById(route.paramMap.get('id')).pipe(
+        // Error here means the requested account is not available
+        catchError((error) => {
+            // Log the error
+            console.log('Error fetching brand by id!', error);
+
+            // Get the parent url
+            const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+            // Navigate to there
+            router.navigateByUrl(parentUrl);
+
+            // Throw an error
+            return throwError(error);
+        })
+    );
+};
+
+export const brandsResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const service = inject(BrandService);
+    const sessionService = inject(UserSessionService);
+    // const logger = inject(LogService);
+    const router = inject(Router);
+    const tenant = sessionService.session().tenantId;
+
+    //TODO: make sure that this function compansates sponsor
+
+    return service.getBrandWithoutProductByTenant(tenant).pipe(
+        // Error here means the requested account is not available
+        catchError((error) => {
+            // Log the error
+            console.log(
+                'Error fetching brands with products by tenant id!',
+                error
+            );
+
+            // Get the parent url
+            const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+            // Navigate to there
+            router.navigateByUrl(parentUrl);
+
+            // Throw an error
+            return throwError(error);
+        })
+    );
+};
+
 export const myShipmentsResolver = (
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -23,6 +82,37 @@ export const myShipmentsResolver = (
     //TODO: make sure that this function compansates sponsor
 
     return service.getShipmentByUserId(user.id).pipe(
+        // Error here means the requested account is not available
+        catchError((error) => {
+            // Log the error
+            console.log(
+                'Error fetching shipments with products by user id!',
+                error
+            );
+
+            // Get the parent url
+            const parentUrl = state.url.split('/').slice(0, -1).join('/');
+
+            // Navigate to there
+            router.navigateByUrl(parentUrl);
+
+            // Throw an error
+            return throwError(error);
+        })
+    );
+};
+
+export const allShipmentsResolver = (
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+) => {
+    const service = inject(ShipmentService);
+    const localStorage = inject(LocalStorageService);
+    const router = inject(Router);
+
+    //TODO: make sure that this function compansates sponsor
+
+    return service.getShipments().pipe(
         // Error here means the requested account is not available
         catchError((error) => {
             // Log the error

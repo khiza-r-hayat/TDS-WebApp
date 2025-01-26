@@ -158,6 +158,12 @@ export const appRoutes: Route[] = [
                 canActivate: [RouteGuard],
             },
             {
+                path: 'search-shipments',
+                loadChildren: () =>
+                    import('app/modules/admin/search-shipments/search-shipments.routes'),
+                canActivate: [RouteGuard],
+            },
+            {
                 path: 'profile',
                 loadChildren: () =>
                     import('app/modules/admin/profile/profile.routing'),
