@@ -298,8 +298,8 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
         const filter: ShipmentFilterModel = {
             origin: this.geoOrigin,
             destination: this.geoDestination,
-            odh: form.odh,
-            ddh: form.ddh,
+            odh: form.odh * 1000,
+            ddh: form.ddh * 1000,
             start: form.start,
             end: form.end,
         };

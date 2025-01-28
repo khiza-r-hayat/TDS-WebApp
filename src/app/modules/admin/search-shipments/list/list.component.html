@@ -22,7 +22,7 @@
                         <ng-container *transloco="let t">
                             <div class="text-4xl font-extrabold text-white tracking-tight">Shipments</div>
                         </ng-container>
-                        <form [formGroup]="filterForm" class="w-full">
+                        <form [formGroup]="filterForm" class="w-full mt-4">
                             <div class="flex flex-col sm:flex-row items-center w-full space-x-2">
                                 <!-- Origin -->
                                 <mat-form-field class="fuse-mat-no-subscript w-full">
@@ -33,7 +33,7 @@
                                 </mat-form-field>
                                 <!-- Dead Head Origin-->
                                 <mat-form-field class="fuse-mat-no-subscript w-1/3">
-                                    <input type="number" aria-label="Number" placeholder="0" matInput
+                                    <input type="number" aria-label="Number" placeholder="KM" matInput
                                         formControlName="odh" min="0">
                                 </mat-form-field>
                                 <!-- Icon -->
@@ -48,7 +48,7 @@
                                 </mat-form-field>
                                 <!-- Dead Head Destination-->
                                 <mat-form-field class="fuse-mat-no-subscript w-1/3">
-                                    <input type="number" aria-label="Number" placeholder="0" matInput
+                                    <input type="number" aria-label="Number" placeholder="KM" matInput
                                         formControlName="ddh" min="0">
                                 </mat-form-field>
                                 <!-- date range -->
@@ -207,9 +207,10 @@
                                     <div class="flex mt-2">
                                         <span class="font-medium mr-2 whitespace-nowrap">
 
-                                            <button mat-icon-button [matTooltip]="'Bid on shipment'" (click)="viewShipmentDetails(shipment)">
-                                                <mat-icon class="icon-size-7"
-                                                    [svgIcon]="'heroicons_outline:eye'" color="primary"></mat-icon>
+                                            <button mat-icon-button [matTooltip]="'Bid on shipment'"
+                                                (click)="viewShipmentDetails(shipment)">
+                                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:eye'"
+                                                    color="primary"></mat-icon>
                                             </button>
 
                                         </span>
@@ -335,34 +336,24 @@
         <!-- Bid Input -->
         <div class="mt-6">
             <label for="bidRate" class="block text-sm font-medium text-gray-500 dark:text-gray-400">
-               <strong>Enter Your Bid Rate</strong>
+                <strong>Enter Your Bid Rate</strong>
             </label>
             <div class="mt-1 flex">
-                <input
-                    type="number"
-                    id="bidRate"
-                    [(ngModel)]="bidRate"
-                    min="0"
-                    [max]="shipmentInView().rate"
+                <input type="number" id="bidRate" [(ngModel)]="bidRate" min="1" [max]="shipmentInView().rate"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                    placeholder="Enter bid amount"
-                />
+                    placeholder="Enter bid amount" />
             </div>
         </div>
 
         <!-- Modal Footer -->
         <div class="mt-6 flex justify-end space-x-3">
-            <button
-                class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                (click)="closeAll()">
+            <button mat-button class="px-4 py-2" (click)="closeAll()">
                 Close
             </button>
-            <button
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600"
+            <button mat-flat-button class="px-4 py-2" color="primary" [disabled]="bidRate<1"
                 (click)="submitBid(bidRate)">
                 Add Bid
             </button>
         </div>
     </div>
 </ng-template>
-
