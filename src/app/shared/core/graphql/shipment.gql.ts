@@ -99,3 +99,17 @@ export const UpsertShipmentsQL = gql`
         }
     }
 `;
+
+export const UpsertShipmentBidQL = gql`
+    mutation UpsertShipmentBidQL($bids: [shipment_bids_insert_input!]!) {
+        insert_shipment_bids(
+            objects: $bids
+            on_conflict: {
+                constraint: shipment_bids_pkey
+                update_columns: [bid]
+            }
+        ) {
+            affected_rows
+        }
+    }
+`;

@@ -11,7 +11,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             userId: param.userId,
             origin: param.origin,
             originAddress: param.originAddress,
-            destination:param.destination,
+            destination: param.destination,
             destinationAddress: param.destinationAddress,
             pickupEarliest: param.pickupEarliest,
             pickupLatest: param.pickupLatest,
@@ -29,6 +29,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             updatedAt: param.updatedAt,
             open: param.open,
             status: param.status,
+            bids: param.bids,
         };
     }
 
@@ -38,7 +39,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             userId: param.userId,
             origin: param.origin,
             originAddress: param.originAddress,
-            destination:param.destination,
+            destination: param.destination,
             destinationAddress: param.destinationAddress,
             pickupEarliest: param.pickupEarliest,
             pickupLatest: param.pickupLatest,
@@ -56,6 +57,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             updatedAt: param.updatedAt,
             open: param.open,
             status: param.status,
+            bids: param.bids,
         };
     }
 }

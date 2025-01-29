@@ -90,7 +90,7 @@ export class ApprovalListComponent {
 
     //<---------------------- table Variables --------------------------->
     dataSource: MatTableDataSource<any>;
-    userId:string = null
+    userId: string = null;
 
     itemsPerPage: number = 20;
     tableColumns: string[] = [
@@ -122,7 +122,7 @@ export class ApprovalListComponent {
         private _accountService: AccountService,
         private _confirmationDialogs: ConfirmationDialogs,
         private _dialog: MatDialog,
-        private _userService:UserService
+        private _userService: UserService
     ) {}
 
     accounts = computed(() => {
@@ -157,9 +157,9 @@ export class ApprovalListComponent {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-      this._userService.user$.subscribe((user: User) => {
-                  this.userId = user.id;
-              });
+        this._userService.user$.subscribe((user: User) => {
+            this.userId = user.id;
+        });
         this.dataSource = new MatTableDataSource(this.accounts());
     }
 
@@ -233,7 +233,7 @@ export class ApprovalListComponent {
     activate(account?: UserModel) {
         const multi: boolean = account === null || account === undefined;
         this._confirmationDialogs
-            .confirmApproval('User', multi)
+            .confirmApproval('User', multi, CONSTANTS.APPROVE)
             .afterClosed()
             .subscribe((result) => {
                 if (result === CONSTANTS.CONFIRMED) {

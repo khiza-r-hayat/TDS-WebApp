@@ -3,7 +3,11 @@ import { catchError, Observable, of, tap } from 'rxjs';
 import { FilterUtils } from '../../classes/filter_utils';
 import { MessageService } from '../../classes/message.service';
 import { ShipmentHelper } from '../helpers/shipment.helper';
-import { ShipmentFilterModel, ShipmentModel } from '../models/shipment.model';
+import {
+    BidModel,
+    ShipmentFilterModel,
+    ShipmentModel,
+} from '../models/shipment.model';
 import { ShipmentRepository } from '../repository/shipment.repository';
 
 @Injectable({ providedIn: 'root' })
@@ -51,14 +55,12 @@ export class ShipmentService {
             })
         );
     }
-    
+
     getShipments(): Observable<ShipmentModel[]> {
         return this.api.getShipments().pipe(
             catchError((e) => {
                 console.log('Error fetching shipments!', e);
-                this.messageService.errorMessage(
-                    'Failed to fetch shipments!'
-                );
+                this.messageService.errorMessage('Failed to fetch shipments!');
                 return of(null);
             }),
             tap((response: any) => {
@@ -88,13 +90,13 @@ export class ShipmentService {
         return FilterUtils.filterArrayByQuery(this.shipments() ?? [], query);
     }
 
-    getFilteredShipments(filter:ShipmentFilterModel): Observable<ShipmentModel[]> {
+    getFilteredShipments(
+        filter: ShipmentFilterModel
+    ): Observable<ShipmentModel[]> {
         return this.api.getFilteredShipments(filter).pipe(
             catchError((e) => {
                 console.log('Error fetching shipments!', e);
-                this.messageService.errorMessage(
-                    'Failed to fetch shipments!'
-                );
+                this.messageService.errorMessage('Failed to fetch shipments!');
                 return of(null);
             }),
             tap((response: any) => {
@@ -157,6 +159,26 @@ export class ShipmentService {
                         } successfully!`
                     );
                     this.addShipmentsLocally(shipments);
+                }
+            })
+        );
+    }
+
+    upsertShipmentBids(bids: BidModel[]): Observable<any> {
+        return this.api.upsertShipmentBids(bids).pipe(
+            catchError((e) => {
+                this.messageService.errorMessage(
+                    `Failed to upload ${bids.length === 1 ? 'bid' : 'bids'}`
+                );
+                return of(null);
+            }),
+            tap((res: any) => {
+                if (res) {
+                    console.log(
+                        `Added ${bids.length} ${
+                            bids.length === 1 ? 'bid' : 'bids'
+                        } successfully!`
+                    );
                 }
             })
         );

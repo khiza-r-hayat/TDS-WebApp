@@ -33,12 +33,16 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FuseFindByKeyPipe } from '@fuse/pipes/find-by-key/find-by-key.pipe';
 import { TranslocoModule } from '@ngneat/transloco';
+import { UserService } from 'app/core/user/user.service';
+import { User } from 'app/core/user/user.types';
 import { ConfirmationDialogs } from 'app/shared/core/classes/confirmation_dialogs';
+import { CONSTANTS } from 'app/shared/core/classes/utility';
 import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
 import {
+    BidModel,
     GeoLocationModel,
     ShipmentFilterModel,
     ShipmentModel,
@@ -76,7 +80,6 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
 export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     @ViewChild('shipmentDetailsView') shipmentDetailsView: TemplateRef<any>;
-    // dataSourceBulkImport: MatTableDataSource<any> = new MatTableDataSource();
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('selectAll') selectAllCheckBox: MatCheckbox;
@@ -116,6 +119,7 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     //<--------------------- Model Variables ---------------------->
     shipmentInView = signal<ShipmentModel>(null);
     bidRate: number = 0;
+    user: User = null;
     //<--------------------- Flag Variables ---------------------->
 
     enableActions = signal<boolean>(false);
@@ -129,7 +133,8 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
         private _formBuilder: UntypedFormBuilder,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _userService: UserService
     ) {}
 
     shipments = computed(() => {
@@ -175,6 +180,7 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
                 this.shipmentInView.set(null);
             });
     }
+
     closeAll() {
         this._dialog.closeAll();
     }
@@ -184,10 +190,9 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        // this._activatedRoute.data.subscribe((data) => {
-        //     // console.log(data);
-        //     this.searchRoute.set(data['search']);
-        // });
+        this._userService.user$.subscribe((user) => {
+            this.user = user;
+        });
         this.initializeForm();
 
         this.dataSource = new MatTableDataSource(this.shipments());
@@ -314,7 +319,37 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     // @ Save/Upload Methods
     // -----------------------------------------------------------------------------------------------------
 
-    submitBid() {}
+    submitBid(bid: number) {
+        this._confirmationDialogs
+            .confirmApproval('Bid', false, 'Submit')
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === CONSTANTS.CONFIRMED) {
+                    const bidUpload: BidModel = {
+                        shipmentId: this.shipmentInView().id,
+                        operatorId: this.user.id,
+                        bid: bid,
+                    };
+
+                    this._shipmentService
+                        .upsertShipmentBids([bidUpload])
+                        .subscribe((res) => {
+                            if (res) {
+                                this.shipmentInView.update((value) => {
+                                    const index = value.bids.findIndex(
+                                        (b) => b.operatorId === this.user.id
+                                    );
+
+                                    value.bids[index] = {
+                                        ...bidUpload,
+                                    };
+                                    return value;
+                                });
+                            }
+                        });
+                }
+            });
+    }
 
     /**
      * Track by function for ngFor loops
