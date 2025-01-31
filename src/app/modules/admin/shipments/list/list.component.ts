@@ -1,14 +1,16 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import {
     ChangeDetectorRef,
     Component,
+    TemplateRef,
+    ViewChild,
     computed,
     signal,
-    ViewChild,
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormField } from '@angular/material/form-field';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
@@ -26,7 +28,10 @@ import {
     equipmentTypes,
     pakistan_locations,
 } from 'app/shared/core/data/data_sets/cities_and_state';
-import { ShipmentModel } from 'app/shared/core/domain/models/shipment.model';
+import {
+    BidModel,
+    ShipmentModel,
+} from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 
@@ -49,6 +54,8 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         TranslocoModule,
         FuseFindByKeyPipe,
         ShipmentAgePipe,
+        CurrencyPipe,
+        DatePipe,
     ],
     templateUrl: './list.component.html',
 })
@@ -59,6 +66,8 @@ export class ShipmentListComponent {
 
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('selectAll') selectAllCheckBox: MatCheckbox;
+
+    @ViewChild('shipmentBidsView') shipmentBidsView: TemplateRef<any>;
 
     //<--------------------- Table Variables ---------------------->
     dataSource: MatTableDataSource<any>;
@@ -82,6 +91,8 @@ export class ShipmentListComponent {
 
     locations = pakistan_locations;
     equipmentTypes = equipmentTypes;
+    shipmentBids = signal<BidModel[]>([]);
+    shipmentInView = signal<ShipmentModel>(null);
 
     //<--------------------- Flag Variables ---------------------->
 
@@ -94,7 +105,8 @@ export class ShipmentListComponent {
         private _confirmationDialogs: ConfirmationDialogs,
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
-        private _changeDetectorRef: ChangeDetectorRef
+        private _changeDetectorRef: ChangeDetectorRef,
+        private _dialog: MatDialog
     ) {}
 
     shipments = computed(() => {
@@ -109,25 +121,20 @@ export class ShipmentListComponent {
     // @ Drawer Methods
     // -----------------------------------------------------------------------------------------------------
 
-    onBackdropClicked(): void {
-        // Go back to the list
-        this._router.navigate(['./'], { relativeTo: this._activatedRoute });
-        this.matDrawer.close();
+    // onBackdropClicked(): void {
+    //     // Go back to the list
+    //     this._router.navigate(['./'], { relativeTo: this._activatedRoute });
+    //     this.matDrawer.close();
 
-        // Mark for check
-        this._changeDetectorRef.markForCheck();
-    }
+    //     // Mark for check
+    //     this._changeDetectorRef.markForCheck();
+    // }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Lifecycle hooks
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
-        // this._activatedRoute.data.subscribe((data) => {
-        //     // console.log(data);
-        //     this.searchRoute.set(data['search']);
-        // });
-
         this.dataSource = new MatTableDataSource(this.shipments());
     }
 
@@ -176,9 +183,9 @@ export class ShipmentListComponent {
     selectAll() {
         this.selectAllCheckBox.checked = true;
         this.shipments()
-        .filter((s) => s.open)
-        .forEach((row) => this.selection.select(row));
-        if(this.selection.selected.length) {
+            .filter((s) => s.open)
+            .forEach((row) => this.selection.select(row));
+        if (this.selection.selected.length) {
             this.toggleActions();
         }
     }
@@ -190,6 +197,20 @@ export class ShipmentListComponent {
     }
 
     // -----------------------------------------------------------------------------------------------------
+    // @ Dialog Methods
+    // -----------------------------------------------------------------------------------------------------
+    openBidsDialog(shipment: ShipmentModel) {
+        this.shipmentBids.set(shipment.bids ?? []);
+        this._dialog.open(this.shipmentBidsView, {
+            height: '70vh',
+            width: '70vw',
+        });
+    }
+
+    closeAll() {
+        this._dialog.closeAll();
+    }
+    // -----------------------------------------------------------------------------------------------------
     // @ Filter Methods
     // -----------------------------------------------------------------------------------------------------
 
@@ -197,6 +218,40 @@ export class ShipmentListComponent {
         this.searchText.update(() => text);
     }
 
+    // -----------------------------------------------------------------------------------------------------
+    // @ Save Methods
+    // -----------------------------------------------------------------------------------------------------
+    acceptBid(bid: BidModel) {
+        this._confirmationDialogs
+            .confirmApproval('Bid', false, 'Accept')
+            .afterClosed()
+            .subscribe((res) => {
+                if (res === CONSTANTS.CONFIRMED) {
+                    const bidUpload: BidModel = {
+                        ...bid,
+                        accepted: true,
+                    };
+
+                    this._shipmentService
+                        .upsertShipmentStatus(bidUpload)
+                        .subscribe((res) => {
+                            if (res) {
+                                this.shipmentInView.update((value) => {
+                                    const index = value.bids.findIndex(
+                                        (b) => b.operatorId === bid.operatorId
+                                    );
+
+                                    value.bids[index] = {
+                                        ...bidUpload,
+                                    };
+                                    return value;
+                                });
+                                this._dialog.closeAll();
+                            }
+                        });
+                }
+            });
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Delete Methods
     // -----------------------------------------------------------------------------------------------------

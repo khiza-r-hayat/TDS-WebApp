@@ -1,5 +1,5 @@
 import { ShipmentStatus, Utility } from '../../classes/utility';
-import { GeoLocationModel, ShipmentModel } from '../models/shipment.model';
+import { BidModel, GeoLocationModel, ShipmentModel } from '../models/shipment.model';
 
 export class ShipmentHelper {
     public static generateShipmentUploadObject(
@@ -7,7 +7,8 @@ export class ShipmentHelper {
         shipmentId: string,
         userId: string,
         origin: GeoLocationModel,
-        destination: GeoLocationModel
+        destination: GeoLocationModel,
+        bids:BidModel[]
     ): ShipmentModel {
         return {
             id: shipmentId,
@@ -36,6 +37,7 @@ export class ShipmentHelper {
             destination: destination,
             status: ShipmentStatus.POSTED,
             open: true,
+            bids: bids,
         };
     }
 
@@ -61,6 +63,7 @@ export class ShipmentHelper {
             destination: data.destination,
             open: data.open,
             status: data.status,
+            bids: data.bids,
         };
     }
 }

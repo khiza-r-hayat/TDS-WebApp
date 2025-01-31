@@ -115,3 +115,11 @@ export const deleteAccountsQL = gql`
     }
   }
 `;
+
+export const dissableAccountsQL = gql`
+    mutation dissableAccountsQL($ids: [uuid!]!,$active:Boolean!) {
+        update_user(where: { id: { _in: $ids } }, _set: { active: $active }) {
+            affected_rows
+        }
+    }
+`;

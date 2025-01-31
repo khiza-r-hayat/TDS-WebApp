@@ -52,7 +52,6 @@ import { Observable } from 'rxjs';
     imports: [
         MatButtonModule,
         MatTooltipModule,
-        RouterLink,
         MatIconModule,
         FormsModule,
         ReactiveFormsModule,
@@ -262,7 +261,7 @@ export class ShipmentDetailComponent implements OnInit, AfterViewInit {
     onSubmit(event: Event): void {
         event.preventDefault(); // Prevent form submission
         // You can handle other logic here if needed
-      }
+    }
 
     // -----------------------------------------------------------------------------------------------------
     // @ Form Modification Methods
@@ -294,7 +293,8 @@ export class ShipmentDetailComponent implements OnInit, AfterViewInit {
                 this.shipmentId,
                 this.userId,
                 this.geoOrigin,
-                this.geoDestination
+                this.geoDestination,
+                this.editMode ? this.shipment().bids : []
             );
 
         // console.log('form value:', upload);

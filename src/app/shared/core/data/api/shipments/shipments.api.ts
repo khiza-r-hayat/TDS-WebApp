@@ -115,4 +115,15 @@ export class ShipmentAPI implements ShipmentRepository {
             },
         });
     }
+
+    upsertShipmentStatus(bid: BidModel): Observable<any> {
+        return this.apollo.mutate<BidModel>({
+            mutation: Query.UpsertShipmentStatusQL,
+            variables: {
+                bid: bid,
+                shipmentId: bid.shipmentId,
+                open: !bid.accepted,
+            },
+        });
+    }
 }

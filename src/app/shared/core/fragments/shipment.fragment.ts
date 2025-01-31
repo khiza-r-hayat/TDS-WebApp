@@ -1,5 +1,20 @@
 import gql from 'graphql-tag';
 
+export const BidQL = gql`
+    fragment BidQL on shipment_bids {
+        shipmentId
+        operatorId
+        bid
+        accepted
+        createdAt
+        updatedAt
+        operator {
+            id
+            title
+        }
+    }
+`;
+
 export const ShipmentQL = gql`
     fragment ShipmentQL on shipments {
         id
@@ -24,5 +39,9 @@ export const ShipmentQL = gql`
         updatedAt
         status
         open
+        bids {
+            ...BidQL
+        }
     }
+    ${BidQL}
 `;

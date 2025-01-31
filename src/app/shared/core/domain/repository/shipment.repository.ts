@@ -14,5 +14,6 @@ export abstract class ShipmentRepository {
     abstract getShipmentById(id: string): Observable<ShipmentModel[]>;
     abstract deleteShipments(ids: string[]): Observable<any>;
     abstract upsertShipments(shipments: ShipmentModel[]): Observable<any>;
-    abstract upsertShipmentBids(bid: BidModel[]): Observable<any>;
+    abstract upsertShipmentBids(bids: BidModel[]): Observable<any>;
+    abstract upsertShipmentStatus(bid: BidModel): Observable<any>;
 }

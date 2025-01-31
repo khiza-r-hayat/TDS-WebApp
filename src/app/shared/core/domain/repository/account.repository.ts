@@ -8,4 +8,5 @@ export abstract class AccountRepository {
   abstract getAccountByEmail(id: string): Observable<UserModel[]>;
   abstract addAccounts(accounts: UserModel[]): Observable<any>;
   abstract deleteAccounts(ids: string[]): Observable<any>;
+  abstract dissableAccounts(ids: string[],active:boolean): Observable<any>;
 }

@@ -113,3 +113,27 @@ export const UpsertShipmentBidQL = gql`
         }
     }
 `;
+
+export const UpsertShipmentStatusQL = gql`
+    mutation UpsertShipmentBidQL(
+        $bid: shipment_bids_insert_input!
+        $shipmentId: uuid!
+        $open: Boolean!
+    ) {
+        insert_shipment_bids_one(
+            object: $bid
+            on_conflict: {
+                constraint: shipment_bids_pkey
+                update_columns: [bid, accepted]
+            }
+        ) {
+            accepted
+        }
+        update_shipments(
+            where: { id: { _eq: $shipmentId } }
+            _set: { open: $open }
+        ) {
+            affected_rows
+        }
+    }
+`;

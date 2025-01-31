@@ -33,6 +33,7 @@ export interface BidModel {
     shipmentId: string;
     operatorId: string;
     bid: number;
+    accepted?: boolean;
     createdAt?: Date;
     updatedAt?: Date;
     operator?: UserModel;

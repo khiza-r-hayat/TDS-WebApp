@@ -183,6 +183,24 @@ export class ShipmentService {
             })
         );
     }
+    
+    upsertShipmentStatus(bid: BidModel): Observable<any> {
+        return this.api.upsertShipmentStatus(bid).pipe(
+            catchError((e) => {
+                this.messageService.errorMessage(
+                    `Failed to update bid`
+                );
+                return of(null);
+            }),
+            tap((res: any) => {
+                if (res) {
+                    console.log(
+                        `Updated bid successfully!`
+                    );
+                }
+            })
+        );
+    }
 
     addShipmentsLocally(shipments: ShipmentModel[]) {
         let shipmentList: ShipmentModel[] = this._shipments();

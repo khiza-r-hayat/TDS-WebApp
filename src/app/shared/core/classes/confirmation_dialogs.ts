@@ -49,7 +49,7 @@ export class ConfirmationDialogs {
             },
             actions: {
                 confirm: {
-                    label: CONSTANTS.APPROVE,
+                    label: action,
                     color: 'primary',
                 },
             },

@@ -63,7 +63,6 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         MatInput,
         MatButton,
         MatPaginator,
-        RouterLink,
         DatePipe,
         TranslocoModule,
         FuseFindByKeyPipe,
@@ -345,6 +344,7 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
                                     };
                                     return value;
                                 });
+                                this._dialog.closeAll()
                             }
                         });
                 }
