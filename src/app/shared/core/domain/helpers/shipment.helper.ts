@@ -8,7 +8,6 @@ export class ShipmentHelper {
         userId: string,
         origin: GeoLocationModel,
         destination: GeoLocationModel,
-        bids:BidModel[]
     ): ShipmentModel {
         return {
             id: shipmentId,
@@ -37,7 +36,6 @@ export class ShipmentHelper {
             destination: destination,
             status: ShipmentStatus.POSTED,
             open: true,
-            bids: bids,
         };
     }
 

@@ -1,4 +1,5 @@
 import gql from 'graphql-tag';
+import { UserQL } from './account.fragment';
 
 export const BidQL = gql`
     fragment BidQL on shipment_bids {
@@ -42,6 +43,10 @@ export const ShipmentQL = gql`
         bids {
             ...BidQL
         }
+            user{
+            ...UserQL
+            }
     }
     ${BidQL}
+    ${UserQL}
 `;

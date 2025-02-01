@@ -67,20 +67,20 @@ const defaultNav: FuseNavigationItem[] = [
             },
         ],
     },
-    {
-        id: 'report',
-        title: 'Reports',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/reports',
-    },
-    {
-        id: 'settings',
-        title: 'Settings',
-        type: 'basic',
-        icon: 'heroicons_outline:cog',
-        link: '/settings',
-    },
+    // {
+    //     id: 'report',
+    //     title: 'Reports',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:document-text',
+    //     link: '/reports',
+    // },
+    // {
+    //     id: 'settings',
+    //     title: 'Settings',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:cog',
+    //     link: '/settings',
+    // },
 ];
 const inactiveUserNav: FuseNavigationItem[] = [
     {
@@ -92,13 +92,13 @@ const inactiveUserNav: FuseNavigationItem[] = [
     },
 ]
 const superAdminNav: FuseNavigationItem[] =[
-    {
-        id: 'dashboard',
-        title: 'Dashboard',
-        type: 'basic',
-        icon: 'heroicons_outline:home',
-        link: '/dashboard',
-    },
+    // {
+    //     id: 'dashboard',
+    //     title: 'Dashboard',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:home',
+    //     link: '/dashboard',
+    // },
     // {
     //   id: "event",
     //   title: "Search Load",
@@ -171,30 +171,30 @@ const superAdminNav: FuseNavigationItem[] =[
         },
       ],
     },
-    {
-        id: 'report',
-        title: 'Reports',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/reports',
-    },
-    {
-        id: 'settings',
-        title: 'Settings',
-        type: 'basic',
-        icon: 'heroicons_outline:cog',
-        link: '/settings',
-    },
+    // {
+    //     id: 'report',
+    //     title: 'Reports',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:document-text',
+    //     link: '/reports',
+    // },
+    // {
+    //     id: 'settings',
+    //     title: 'Settings',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:cog',
+    //     link: '/settings',
+    // },
 ];
 
 const loadAdminNav: FuseNavigationItem[] = [
-    {
-        id: 'dashboard',
-        title: 'Dashboard',
-        type: 'basic',
-        icon: 'heroicons_outline:home',
-        link: '/dashboard',
-    },
+    // {
+    //     id: 'dashboard',
+    //     title: 'Dashboard',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:home',
+    //     link: '/dashboard',
+    // },
     // {
     //   id: "event",
     //   title: "Search Load",
@@ -236,13 +236,13 @@ const loadAdminNav: FuseNavigationItem[] = [
                 icon: 'heroicons_outline:tag',
                 link: '/shipments',
             },
-            {
-                id: 'shipment.search',
-                title: 'Search Shipment',
-                type: 'basic',
-                icon: 'heroicons_outline:cube',
-                link: '/search-shipments',
-            },
+            // {
+            //     id: 'shipment.search',
+            //     title: 'Search Shipment',
+            //     type: 'basic',
+            //     icon: 'heroicons_outline:cube',
+            //     link: '/search-shipments',
+            // },
         ],
     },
     // {
@@ -273,31 +273,31 @@ const loadAdminNav: FuseNavigationItem[] = [
     //       link: "/accounts",
     //     },
     //   ],
+    // // },
+    // {
+    //     id: 'report',
+    //     title: 'Reports',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:document-text',
+    //     link: '/reports',
     // },
-    {
-        id: 'report',
-        title: 'Reports',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/reports',
-    },
-    {
-        id: 'settings',
-        title: 'Settings',
-        type: 'basic',
-        icon: 'heroicons_outline:cog',
-        link: '/settings',
-    },
+    // {
+    //     id: 'settings',
+    //     title: 'Settings',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:cog',
+    //     link: '/settings',
+    // },
 ];
 
 const operatorAdminNav: FuseNavigationItem[] = [
-    {
-        id: 'dashboard',
-        title: 'Dashboard',
-        type: 'basic',
-        icon: 'heroicons_outline:home',
-        link: '/dashboard',
-    },
+    // {
+    //     id: 'dashboard',
+    //     title: 'Dashboard',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:home',
+    //     link: '/dashboard',
+    // },
     // {
     //   id: "event",
     //   title: "Search Load",
@@ -377,20 +377,20 @@ const operatorAdminNav: FuseNavigationItem[] = [
     //     },
     //   ],
     // },
-    {
-        id: 'report',
-        title: 'Reports',
-        type: 'basic',
-        icon: 'heroicons_outline:document-text',
-        link: '/reports',
-    },
-    {
-        id: 'settings',
-        title: 'Settings',
-        type: 'basic',
-        icon: 'heroicons_outline:cog',
-        link: '/settings',
-    },
+    // {
+    //     id: 'report',
+    //     title: 'Reports',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:document-text',
+    //     link: '/reports',
+    // },
+    // {
+    //     id: 'settings',
+    //     title: 'Settings',
+    //     type: 'basic',
+    //     icon: 'heroicons_outline:cog',
+    //     link: '/settings',
+    // },
 ];
 
 const sponsorNav: FuseNavigationItem[] = [

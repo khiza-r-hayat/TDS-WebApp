@@ -135,7 +135,7 @@ export class AccountListComponent {
     return data;
   });
 
-  roles = computed(()=>this._accountService.roles().filter(r=>r.id!==UserRole.SUPER_ADMINISTRATOR));
+  roles = computed(()=>[{id:0,title:'All'},...this._accountService.roles().filter(r=>r.id!==UserRole.SUPER_ADMINISTRATOR)]);
 
   // -----------------------------------------------------------------------------------------------------
   // @ Signal Methods

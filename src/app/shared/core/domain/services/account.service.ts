@@ -7,8 +7,6 @@ import { AccountMapper } from '../../data/api/account/account.mapper';
 import { RoleMapper } from '../../data/api/account/role.mapper';
 import { Role, UserModel } from '../models/account.model';
 import { AccountRepository } from '../repository/account.repository';
-import { getAuth } from 'firebase/auth';
-import * as admin from 'firebase-admin';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -256,39 +254,6 @@ export class AccountService {
                         (v) => !accounts.some((a) => a.id === v.id)
                     );
                     this._accounts.set(accountsFiltered);
-                }
-            });
-    }
-
-    dissableSelectedAccounts(accounts: UserModel[],active:boolean) {
-        const ids = accounts.map((a) => a.id);
-        this.api
-            .dissableAccounts(ids,active)
-            .pipe(
-                catchError((e) => {
-                    console.log('Error deleting accounts', e);
-                    this.messageService.errorMessage(
-                        `Error deleting ${ids.length === 1 ? 'account' : 'accounts'}`
-                    );
-                    return of(null);
-                })
-            )
-            .subscribe((res) => {
-                if (res) {
-                    // for
-                    // admin.auth().updateUsers(, {
-                    //     disabled: !active,
-                    // });
-                    const accountsUpdate = this._accounts().map((v) => {
-                        if (accounts.some((a) => a.id === v.id)) {
-                            return {
-                                ...v,
-                                active: false,
-                            };
-                        }
-                        return v;
-                    });
-                    this._accounts.set(accountsUpdate);
                 }
             });
     }

@@ -293,8 +293,7 @@ export class ShipmentDetailComponent implements OnInit, AfterViewInit {
                 this.shipmentId,
                 this.userId,
                 this.geoOrigin,
-                this.geoDestination,
-                this.editMode ? this.shipment().bids : []
+                this.geoDestination
             );
 
         // console.log('form value:', upload);

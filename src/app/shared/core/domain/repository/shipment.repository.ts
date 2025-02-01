@@ -7,6 +7,7 @@ import {
 
 export abstract class ShipmentRepository {
     abstract getShipmentsByUserId(id: string): Observable<ShipmentModel[]>;
+    abstract getShipmentByUserIdBidAndWon(id: string): Observable<ShipmentModel[]>;
     abstract getShipments(): Observable<ShipmentModel[]>;
     abstract getFilteredShipments(
         filter: ShipmentFilterModel

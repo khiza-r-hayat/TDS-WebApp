@@ -30,6 +30,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             open: param.open,
             status: param.status,
             bids: param.bids,
+            user: param.user,
         };
     }
 
@@ -58,6 +59,7 @@ export class ShipmentMapper extends Mapper<ShipmentResponse, ShipmentModel> {
             open: param.open,
             status: param.status,
             bids: param.bids,
+            user: param.user,
         };
     }
 }

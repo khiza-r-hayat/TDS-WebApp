@@ -19,6 +19,15 @@ export const GetShipmentByUserIdQL = gql`
     ${ShipmentQL}
 `;
 
+export const GetShipmentByUserIdBidAndWon = gql`
+    query GetShipmentByUserIdBidAndWon($id: uuid!) {
+        shipments(where: { bids: { operatorId: { _eq: $id } } }) {
+            ...ShipmentQL
+        }
+    }
+    ${ShipmentQL}
+`;
+
 export const GetShipmentByIdQL = gql`
     query GetShipmentByIdQL($id: uuid!) {
         shipments(where: { id: { _eq: $id } }) {
@@ -119,6 +128,7 @@ export const UpsertShipmentStatusQL = gql`
         $bid: shipment_bids_insert_input!
         $shipmentId: uuid!
         $open: Boolean!
+        $status: String
     ) {
         insert_shipment_bids_one(
             object: $bid
@@ -131,7 +141,7 @@ export const UpsertShipmentStatusQL = gql`
         }
         update_shipments(
             where: { id: { _eq: $shipmentId } }
-            _set: { open: $open }
+            _set: { open: $open, status: $status }
         ) {
             affected_rows
         }

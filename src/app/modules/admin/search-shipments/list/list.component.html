@@ -1,4 +1,4 @@
-<div class="absolute inset-0 flex min-w-0 flex-col overflow-hidden">
+<div class="absolute inset-0 flex min-w-0 flex-col overflow-scroll">
     <!-- <mat-drawer-container class="mat-drawer-container flex-auto h-full dark:bg-transparent"
         (backdropClick)="onBackdropClicked()"> 
          Drawer
@@ -142,7 +142,13 @@
                                                 {{ shipment.destinationAddress}}
                                             </span>
                                         </div>
-                                        <mat-icon [svgIcon]="'heroicons_outline:arrow-long-down'"></mat-icon>
+                                        <div class="flex flex-row items-center">
+                                            <mat-icon [svgIcon]="'heroicons_outline:arrow-long-down'"></mat-icon>
+                                            <div class="flex flex-col">                                            
+                                                <span class="pr-6 whitespace-nowrap">{{shipment|geoDistancePipe}}</span>
+                                                <span class="pr-6 whitespace-nowrap">KM</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </td>
                             </ng-container>
@@ -212,6 +218,11 @@
                                                 <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:eye'"
                                                     color="primary"></mat-icon>
                                             </button>
+                                            <button mat-icon-button [matTooltip]="'Bid on shipment'"
+                                                (click)="viewShipmentBids(shipment)">
+                                                <mat-icon class="icon-size-7" [svgIcon]="'heroicons_outline:archive-box'"
+                                                    color="primary"></mat-icon>
+                                            </button>
 
                                         </span>
 
@@ -241,119 +252,157 @@
 </div>
 
 <ng-template #shipmentDetailsView>
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-        <!-- Modal Header -->
-        <div class="mb-4 border-b pb-2 flex justify-between items-center">
-            <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
-                Shipment Details
-            </h2>
+    <!-- Modal Header -->
+    <div class="flex flex-row justify-between bg-primary-500 text-white px-4 py-2 rounded-lg mb-4">
+        <div class="text-lg">Shipment Bids</div>
+        <button mat-icon-button class="mr-2" (click)="closeAll()"><mat-icon class="icon-size-7 text-white"
+                [svgIcon]="'heroicons_solid:x-mark'"></mat-icon></button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <!-- Origin -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Origin Address
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().originAddress }}
+            </p>
         </div>
 
-        <!-- Modal Content -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-            <!-- Origin -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Origin Address
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().originAddress }}
-                </p>
-            </div>
-
-            <!-- Destination -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Destination Address
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().destinationAddress }}
-                </p>
-            </div>
-
-            <!-- Status -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Status
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().status }}
-                </p>
-            </div>
-
-            <!-- Pickup Time -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Pickup Time
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    Earliest: {{ shipmentInView().pickupEarliest | date:'short' }}<br />
-                    Latest: {{ shipmentInView().pickupLatest | date:'short' }}
-                </p>
-            </div>
-
-            <!-- Equipment ID -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Equipment ID
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ (shipmentInView().equipmentId | fuseFindByKey:'id':equipmentTypes).name }}
-                </p>
-            </div>
-
-            <!-- Commodity -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Commodity
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().commodity }}
-                </p>
-            </div>
-
-            <!-- Rate -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Rate/KM
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().rate | number:'1.2-2' }} PKR
-                </p>
-            </div>
-
-            <!-- Comments -->
-            <div>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                    Comments
-                </p>
-                <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {{ shipmentInView().comments || 'N/A' }}
-                </p>
-            </div>
+        <!-- Destination -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Destination Address
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().destinationAddress }}
+            </p>
         </div>
 
-        <!-- Bid Input -->
-        <div class="mt-6">
-            <label for="bidRate" class="block text-sm font-medium text-gray-500 dark:text-gray-400">
-                <strong>Enter Your Bid Rate</strong>
-            </label>
-            <div class="mt-1 flex">
-                <input type="number" id="bidRate" [(ngModel)]="bidRate" min="1" [max]="shipmentInView().rate"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                    placeholder="Enter bid amount" />
-            </div>
+        <!-- Status -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Status
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().status }}
+            </p>
         </div>
 
-        <!-- Modal Footer -->
-        <div class="mt-6 flex justify-end space-x-3">
-            <button mat-button class="px-4 py-2" (click)="closeAll()">
-                Close
-            </button>
-            <button mat-flat-button class="px-4 py-2" color="primary" [disabled]="bidRate<1"
-                (click)="submitBid(bidRate)">
-                Add Bid
-            </button>
+        <!-- Pickup Time -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Pickup Time
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                Earliest: {{ shipmentInView().pickupEarliest | date:'short' }}<br />
+                Latest: {{ shipmentInView().pickupLatest | date:'short' }}
+            </p>
+        </div>
+
+        <!-- Equipment ID -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Equipment ID
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ (shipmentInView().equipmentId | fuseFindByKey:'id':equipmentTypes).name }}
+            </p>
+        </div>
+
+        <!-- Commodity -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Commodity
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().commodity }}
+            </p>
+        </div>
+
+        <!-- Rate -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Rate/KM
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().rate | number:'1.2-2' }} PKR
+            </p>
+        </div>
+
+        <!-- Comments -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Comments
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().comments || 'N/A' }}
+            </p>
+        </div>
+        
+        <!-- Contact -->
+        <div>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                Contact
+            </p>
+            <p class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {{ shipmentInView().contact==="phone"?shipmentInView().user.phone:shipmentInView().user.email }}
+            </p>
+        </div>
+    </div>
+    @if(!blockBids()){
+    <!-- Bid Input -->
+    <div class="mt-6">
+        <label for="bidRate" class="block text-sm font-medium text-gray-500 dark:text-gray-400">
+            <strong>Enter Your Bid Rate</strong>
+        </label>
+        <div class="mt-1 flex">
+            <input type="number" id="bidRate" [(ngModel)]="bidRate" min="1"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                placeholder="Enter bid amount" />
+        </div>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="mt-6 flex justify-end space-x-3">
+        <button mat-button class="px-4 py-2" (click)="closeAll()">
+            Close
+        </button>
+        <button mat-flat-button class="px-4 py-2" color="primary" [disabled]="bidRate<1" (click)="submitBid(bidRate)">
+            Add Bid
+        </button>
+    </div>
+    }
+</ng-template>
+
+<ng-template #shipmentBidsView>
+    <div class="flex flex-row justify-between bg-primary-500 text-white px-4 py-2 rounded-lg">
+        <div class="text-lg">Shipment Bids</div>
+        <button mat-icon-button class="mr-2" (click)="closeAll()"><mat-icon class="icon-size-7 text-white"
+                [svgIcon]="'heroicons_solid:x-mark'"></mat-icon></button>
+    </div>
+    <div class="bg-card rounded-md h-full w-full p-4">
+        <div class="flex flex-col items-center w-full">
+            @if (shipmentBids().length) {
+            @for(bid of shipmentBids();track $index){
+            <div
+                class="bg-white dark:bg-gray-500 rounded-2xl p-6 shadow-2xl flex flex-row justify-between items-center w-full mb-2">
+                <p class="text-lg"> {{bid.operator.title}}</p>
+                <p class="text-lg"> {{bid.bid|currency:'PKR'}}</p>
+                <p class="text-lg"> {{bid.createdAt |date:'short'}}</p>
+                @if(false){
+                <button mat-flat-button class="px-4 py-2" color="primary" [disabled]="bidRate<1"
+                    (click)="acceptBid(bid)">
+                    Accept Bid
+                </button>
+                }
+            </div>
+            }
+            }@else {
+            <div class="text-lg"> No bids have been placed on this shipment yet!</div>
+            }
         </div>
     </div>
 </ng-template>

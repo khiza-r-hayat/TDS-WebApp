@@ -61,9 +61,10 @@ export interface ShipmentModel {
     refId: string;
     contact: string;
     rate: number;
-    bids: BidModel[];
+    bids?: BidModel[];
     createdAt?: Date;
     updatedAt?: Date;
+    user?: UserModel;
 }
 
 export interface ShipmentResponse {
@@ -90,4 +91,5 @@ export interface ShipmentResponse {
     bids: any[];
     createdAt?: any;
     updatedAt?: any;
+    user?: any;
 }

@@ -1,5 +1,5 @@
 import { SelectionModel } from '@angular/cdk/collections';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import {
     AfterViewInit,
     ChangeDetectorRef,
@@ -48,6 +48,7 @@ import {
     ShipmentModel,
 } from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
+import { GeoDistancePipe } from 'app/shared/pipes/geo-distance-pipe/geo-distance-pipe.pipe';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 
 @Component({
@@ -73,12 +74,16 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         FormsModule,
         ReactiveFormsModule,
         DecimalPipe,
+        GeoDistancePipe,
+        CurrencyPipe,
+        DatePipe
     ],
     templateUrl: './list.component.html',
 })
 export class SearchShipmentListComponent implements OnInit, AfterViewInit {
     @ViewChild('matDrawer', { static: true }) matDrawer: MatDrawer;
     @ViewChild('shipmentDetailsView') shipmentDetailsView: TemplateRef<any>;
+    @ViewChild('shipmentBidsView') shipmentBidsView: TemplateRef<any>;
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('selectAll') selectAllCheckBox: MatCheckbox;
@@ -117,10 +122,12 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
 
     //<--------------------- Model Variables ---------------------->
     shipmentInView = signal<ShipmentModel>(null);
+    shipmentBids = signal<BidModel[]>([]);
     bidRate: number = 0;
     user: User = null;
     //<--------------------- Flag Variables ---------------------->
 
+    blockBids = signal<boolean>(false);
     enableActions = signal<boolean>(false);
     searchRoute = signal<boolean>(false);
     searchText = signal<string>('');
@@ -170,6 +177,8 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
 
     viewShipmentDetails(shipment: ShipmentModel) {
         this.shipmentInView.set(shipment);
+        console.log(shipment.contact ==='phone' ?shipment.user.phone : shipment.user.email);
+        this.blockBids.set(shipment.bids.some((b) => b.accepted));
         this._dialog
             .open(this.shipmentDetailsView, {
                 width: '50vw',
@@ -178,6 +187,16 @@ export class SearchShipmentListComponent implements OnInit, AfterViewInit {
             .subscribe(() => {
                 this.shipmentInView.set(null);
             });
+    }
+    
+    viewShipmentBids(shipment: ShipmentModel) {
+        this.shipmentBids.set(shipment.bids ?? []);
+        this.shipmentInView.set(shipment);
+        this.blockBids.set(this.shipmentBids().some((b) => b.accepted));
+        this._dialog.open(this.shipmentBidsView, {
+            height: '70vh',
+            width: '70vw',
+        });
     }
 
     closeAll() {

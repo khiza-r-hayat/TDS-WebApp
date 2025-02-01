@@ -16,13 +16,16 @@ import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
 import { MatDrawer, MatSidenavModule } from '@angular/material/sidenav';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FuseFindByKeyPipe } from '@fuse/pipes/find-by-key/find-by-key.pipe';
 import { TranslocoModule } from '@ngneat/transloco';
+import { UserService } from 'app/core/user/user.service';
 import { ConfirmationDialogs } from 'app/shared/core/classes/confirmation_dialogs';
+import { UserRole } from 'app/shared/core/classes/roles';
 import { CONSTANTS } from 'app/shared/core/classes/utility';
 import {
     equipmentTypes,
@@ -33,6 +36,7 @@ import {
     ShipmentModel,
 } from 'app/shared/core/domain/models/shipment.model';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
+import { GeoDistancePipe } from 'app/shared/pipes/geo-distance-pipe/geo-distance-pipe.pipe';
 import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe';
 
 @Component({
@@ -45,6 +49,7 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         MatTableModule,
         MatSortModule,
         MatIcon,
+        MatSelectModule,
         MatInput,
         MatButton,
         MatCheckbox,
@@ -56,6 +61,7 @@ import { ShipmentAgePipe } from 'app/shared/pipes/shipment-age/shipment-age.pipe
         ShipmentAgePipe,
         CurrencyPipe,
         DatePipe,
+        GeoDistancePipe,
     ],
     templateUrl: './list.component.html',
 })
@@ -87,9 +93,11 @@ export class ShipmentListComponent {
         'bids',
     ];
 
+    statusList = ['ALL', 'Won', 'Bidded On'];
+
     selection = new SelectionModel<any>(true, []);
 
-    locations = pakistan_locations;
+    // locations = pakistan_locations;
     equipmentTypes = equipmentTypes;
     shipmentBids = signal<BidModel[]>([]);
     shipmentInView = signal<ShipmentModel>(null);
@@ -97,8 +105,12 @@ export class ShipmentListComponent {
     //<--------------------- Flag Variables ---------------------->
 
     enableActions = signal<boolean>(false);
-    // searchRoute = signal<boolean>(false);
+    blockBids = signal<boolean>(false);
     searchText = signal<string>('');
+    BidCOlTitle = signal<string>('');
+    status = signal<string>('ALL');
+    isOpertorAdmin = signal<boolean>(false);
+    userId = signal<string>('');
 
     constructor(
         private _shipmentService: ShipmentService,
@@ -106,11 +118,16 @@ export class ShipmentListComponent {
         private _router: Router,
         private _activatedRoute: ActivatedRoute,
         private _changeDetectorRef: ChangeDetectorRef,
-        private _dialog: MatDialog
+        private _dialog: MatDialog,
+        private _userService: UserService
     ) {}
 
     shipments = computed(() => {
-        const data = this._shipmentService.filterShipments(this.searchText());
+        const data = this._shipmentService.filterShipmentsForOperator(
+            this.searchText(),
+            this.status(),
+            this.userId()
+        );
         if (this.dataSource) {
             this.dataSource.data = data;
         }
@@ -135,6 +152,11 @@ export class ShipmentListComponent {
     // -----------------------------------------------------------------------------------------------------
 
     ngOnInit(): void {
+        this._userService.user$.subscribe((user) => {
+            this.isOpertorAdmin.set(user.roleId === UserRole.OPERATOR_ADMIN);
+            this.userId.set(user.id);
+        });
+        this.BidCOlTitle.set(this.isOpertorAdmin() ? 'Action' : 'Bids');
         this.dataSource = new MatTableDataSource(this.shipments());
     }
 
@@ -201,6 +223,8 @@ export class ShipmentListComponent {
     // -----------------------------------------------------------------------------------------------------
     openBidsDialog(shipment: ShipmentModel) {
         this.shipmentBids.set(shipment.bids ?? []);
+        this.shipmentInView.set(shipment);
+        this.blockBids.set(this.shipmentBids().some((b) => b.accepted));
         this._dialog.open(this.shipmentBidsView, {
             height: '70vh',
             width: '70vw',
@@ -218,6 +242,14 @@ export class ShipmentListComponent {
         this.searchText.update(() => text);
     }
 
+    filterByStatus(text: string) {
+        this.status.update(() => text);
+    }
+
+    isShipmentWon(shipment: ShipmentModel): boolean {
+        const opid = shipment.bids.find((b) => b.accepted)?.operatorId ?? '';
+        return opid === this.userId() || false;
+    }
     // -----------------------------------------------------------------------------------------------------
     // @ Save Methods
     // -----------------------------------------------------------------------------------------------------
@@ -228,9 +260,12 @@ export class ShipmentListComponent {
             .subscribe((res) => {
                 if (res === CONSTANTS.CONFIRMED) {
                     const bidUpload: BidModel = {
-                        ...bid,
+                        bid: bid.bid,
+                        shipmentId: bid.shipmentId,
+                        operatorId: bid.operatorId,
                         accepted: true,
                     };
+                    delete bidUpload['__typename'];
 
                     this._shipmentService
                         .upsertShipmentStatus(bidUpload)

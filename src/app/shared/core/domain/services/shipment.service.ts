@@ -56,6 +56,21 @@ export class ShipmentService {
         );
     }
 
+    getShipmentByUserIdBidAndWon(id: string): Observable<ShipmentModel[]> {
+        return this.api.getShipmentByUserIdBidAndWon(id).pipe(
+            catchError((e) => {
+                console.log('Error fetching shipments by user id!', e, id);
+                this.messageService.errorMessage(
+                    'Failed to fetch shipments by user id!'
+                );
+                return of(null);
+            }),
+            tap((response: any) => {
+                this._shipments.set(response);
+            })
+        );
+    }
+
     getShipments(): Observable<ShipmentModel[]> {
         return this.api.getShipments().pipe(
             catchError((e) => {
@@ -87,7 +102,36 @@ export class ShipmentService {
     //------------------------------------------------------
 
     filterShipments(query: string): ShipmentModel[] {
-        return FilterUtils.filterArrayByQuery(this.shipments() ?? [], query);
+        let shipments = this.shipments() ?? [];
+        if (query !== '') {
+            shipments = FilterUtils.filterArrayByQuery(shipments, query);
+        }
+        return shipments;
+    }
+
+    filterShipmentsForOperator(
+        query: string,
+        status: string,
+        userId: string
+    ): ShipmentModel[] {
+        let shipments = this.shipments() ?? [];
+        if (query !== '') {
+            shipments = FilterUtils.filterArrayByQuery(shipments, query);
+        }
+
+        if (status !== 'ALL') {
+            if (status === 'Won') {
+                shipments = shipments.filter(
+                    (a) => (a.bids.find((b) => b.accepted)?.operatorId??'' === userId)
+                );
+            } else {
+                shipments = shipments.filter((a) =>
+                    !a.bids.find((b) => b.operatorId === userId).accepted
+                );
+            }
+        }
+
+        return shipments;
     }
 
     getFilteredShipments(
@@ -183,20 +227,16 @@ export class ShipmentService {
             })
         );
     }
-    
+
     upsertShipmentStatus(bid: BidModel): Observable<any> {
         return this.api.upsertShipmentStatus(bid).pipe(
             catchError((e) => {
-                this.messageService.errorMessage(
-                    `Failed to update bid`
-                );
+                this.messageService.errorMessage(`Failed to update bid`);
                 return of(null);
             }),
             tap((res: any) => {
                 if (res) {
-                    console.log(
-                        `Updated bid successfully!`
-                    );
+                    console.log(`Updated bid successfully!`);
                 }
             })
         );

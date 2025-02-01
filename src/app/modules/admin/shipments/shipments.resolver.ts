@@ -4,6 +4,7 @@ import {
     Router,
     RouterStateSnapshot,
 } from '@angular/router';
+import { UserRole } from 'app/shared/core/classes/roles';
 import { LocalStorageService } from 'app/shared/core/domain/services/local_storage.service';
 import { ShipmentService } from 'app/shared/core/domain/services/shipment.service';
 import { environment } from 'environments/environment';
@@ -17,10 +18,25 @@ export const myShipmentsResolver = (
     const localStorage = inject(LocalStorageService);
     const router = inject(Router);
     const user = localStorage.get(environment.sessionKey).user;
+    let apiCall = service.getShipments();
+    switch (user.roleId) {
+        case UserRole.SUPER_ADMINISTRATOR:
+            apiCall = service.getShipments();
+            break;
+        case UserRole.SHIPMENT_ADMIN:
+            apiCall = service.getShipmentByUserId(user.id);
+            break;
+        case UserRole.OPERATOR_ADMIN:
+            apiCall = service.getShipmentByUserIdBidAndWon(user.id);
+            break;
+        default: {
+            apiCall = service.getShipments();
+        }
+    }
 
     //TODO: make sure that this function compansates sponsor
 
-    return service.getShipmentByUserId(user.id).pipe(
+    return apiCall.pipe(
         // Error here means the requested account is not available
         catchError((error) => {
             // Log the error

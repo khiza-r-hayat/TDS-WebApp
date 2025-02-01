@@ -11,6 +11,7 @@ import {
 import { ShipmentRepository } from 'app/shared/core/domain/repository/shipment.repository';
 import * as Query from 'app/shared/core/graphql/shipment.gql';
 import { ShipmentMapper } from './shipment.mapper';
+import { ShipmentStatus } from 'app/shared/core/classes/utility';
 
 @Injectable({
     providedIn: 'root',
@@ -59,6 +60,22 @@ export class ShipmentAPI implements ShipmentRepository {
         return this.apollo
             .subscribe<ShipmentModel>({
                 query: Query.GetShipmentByUserIdQL,
+                variables: {
+                    id: id,
+                },
+            })
+            .pipe(
+                map((result) => result.data['shipments']),
+                map((events) =>
+                    events.map((event) => this.mapper.mapFrom(event))
+                )
+            );
+    }
+    
+    getShipmentByUserIdBidAndWon(id: string): Observable<ShipmentModel[]> {
+        return this.apollo
+            .subscribe<ShipmentModel>({
+                query: Query.GetShipmentByUserIdBidAndWon,
                 variables: {
                     id: id,
                 },
@@ -123,6 +140,7 @@ export class ShipmentAPI implements ShipmentRepository {
                 bid: bid,
                 shipmentId: bid.shipmentId,
                 open: !bid.accepted,
+                status: bid.accepted ? ShipmentStatus.BOOKED:ShipmentStatus.POSTED,
             },
         });
     }

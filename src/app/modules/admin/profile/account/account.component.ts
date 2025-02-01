@@ -157,6 +157,8 @@ export class SettingsAccountComponent implements OnInit {
             phone: form.phone,
         };
         delete user.role
+        delete user.approvalRequest;
+        
         this._accountService.updateAccounts([user]).subscribe({
             next: (response) => {
                 this._snackBar.open(

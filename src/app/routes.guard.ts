@@ -27,7 +27,7 @@ const roleAcess = [
     },
     {
         route: 'shipments',
-        roles: [UserRole.SUPER_ADMINISTRATOR, UserRole.SHIPMENT_ADMIN],
+        roles: [UserRole.SUPER_ADMINISTRATOR, UserRole.SHIPMENT_ADMIN,UserRole.OPERATOR_ADMIN],
         active: true,
     },
     {
@@ -78,6 +78,7 @@ const roleAcess = [
 const userInitialRoutes = {
     [UserRole.SUPER_ADMINISTRATOR]: 'approvals',
     [UserRole.SHIPMENT_ADMIN]: 'shipments',
+    [UserRole.OPERATOR_ADMIN]: 'search-shipments',
     [UserRole.NO_ROLE]: 'subscription',
 };
 
